@@ -169,6 +169,20 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Membro não encontrado' });
     }
 
+    // Log de exclusão de membro
+    await Log.logAction({
+      type: 'delete',
+      action: 'delete_member',
+      username: req.userData.email || req.userData.username,
+      description: `Membro removido: ${member.name}`,
+      details: {
+        memberId: member._id,
+        name: member.name
+      },
+      source: 'user',
+      level: 'info'
+    });
+
     res.json({ message: 'Membro removido com sucesso' });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao remover membro' });

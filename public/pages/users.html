@@ -7,6 +7,47 @@
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="../styles/users.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="../images/image.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+      .user-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 18px;
+        border-bottom: 1px solid #eee;
+        font-size: 1.08rem;
+      }
+      .user-name {
+        flex: 1;
+        font-weight: 500;
+      }
+      .user-role {
+        color: #888;
+        margin-right: 10px;
+      }
+      .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 50%;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon-btn:hover {
+        background: #f3e6eb;
+      }
+      .icon-btn .material-icons {
+        font-size: 22px;
+        color: #9e2d4a;
+      }
+      .btn-delete .material-icons {
+        color: #c0392b;
+      }
+    </style>
 </head>
 <body>
     <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
@@ -15,59 +56,62 @@
         <img src="../images/image.png" alt="Logo" class="logo">
     </div>
     <nav class="sidebar">
-        <ul class="nav-menu">
-            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
-            <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
-            <li class="admin-only"><a href="users.html" class="active"><i class="fas fa-user-cog"></i> Usuários</a></li>
-            <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
-            <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
-        </ul>
-        <div class="sidebar-footer">
-            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    <ul class="nav-menu">
+        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
+        <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
+        <li class="admin-only"><a href="users.html" class="active"><i class="fas fa-user-cog"></i> Usuários</a></li>
+        <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
+        <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+</nav>
+<main class="content">
+    <header class="content-header">
+        <h1>Users - Boa Parte</h1>
+        <div class="user-info">
+            <span class="user-name-display">
+                <i class="fas fa-user"></i>
+                <span id="userName">Carregando...</span>
+            </span>
         </div>
-    </nav>
-    <main class="content">
-        <header class="content-header" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 12px; margin-bottom: 18px;">
-            <h1 style="font-size: 2.1em; color: #7c3a1e; font-weight: 800; margin: 0; letter-spacing: 0.01em;">Usuários do Sistema</h1>
-            <div class="user-info" style="font-size: 1.1em; color: #7c3a1e;">
-                <span class="user-name-display">
-                    <i class="fas fa-user"></i>
-                    <span id="userName">Carregando...</span>
-                </span>
-            </div>
-        </header>
-        <div class="users-stats-cards">
-            <div class="users-card total-users">
-                <div class="users-card-title"><i class="fas fa-users"></i> Total de Usuários</div>
-                <div class="users-card-value" id="totalUsers">0</div>
-            </div>
-            <div class="users-card total-admins">
-                <div class="users-card-title"><i class="fas fa-user-shield"></i> Total de Admins</div>
-                <div class="users-card-value" id="totalAdmins">0</div>
-            </div>
-            <div class="users-card total-normal-users">
-                <div class="users-card-title"><i class="fas fa-user"></i> Total de Usuarios/Users</div>
-                <div class="users-card-value" id="totalNormalUsers">0</div>
-            </div>
+    </header>
+    <div class="users-stats-cards">
+        <div class="users-card total-users">
+            <div class="users-card-title"><i class="fas fa-users"></i> Total de Usuários</div>
+            <div class="users-card-value" id="totalUsers">0</div>
         </div>
-        <div class="users-container">
-            <table id="usersTable">
-                <thead>
-                    <tr>
-                        <th>Nome de Usuário</th>
-                        <th>Função</th>
-                        <th>Criado em</th>
-                        <th>ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Conteúdo dinâmico -->
-                </tbody>
-            </table>
+        <div class="users-card total-admins">
+            <div class="users-card-title"><i class="fas fa-user-shield"></i> Total de Admins</div>
+            <div class="users-card-value" id="totalAdmins">0</div>
         </div>
-    </main>
-    <script>
+        <div class="users-card total-normal-users">
+            <div class="users-card-title"><i class="fas fa-user"></i> Total de Usuarios/Users</div>
+            <div class="users-card-value" id="totalNormalUsers">0</div>
+        </div>
+    </div>
+    <div class="users-container">
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>Nome de Usuário</th>
+                    <th>Função</th>
+                    <th>Criado em</th>
+                    <th>ID</th>
+                    <th class="admin-only">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Conteúdo dinâmico -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Exemplo de estrutura de lista de usuários -->
+    <div id="users-list"></div>
+</main>
+<script>
     // Exibe nome do usuário logado e links de admin se for admin
     function checkAuthAndSidebar() {
         let user = null;
@@ -88,6 +132,10 @@
     }
     // Busca usuários do arquivo JSON e renderiza cards de totais e tabela
     async function fetchAndRenderUsers() {
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('user'));
+        } catch {}
         try {
             const response = await fetch('/db/users.json');
             if (!response.ok) {
@@ -99,6 +147,7 @@
             document.getElementById('totalAdmins').textContent = filteredUsers.filter(u => u.role === 'admin').length;
             document.getElementById('totalNormalUsers').textContent = filteredUsers.filter(u => u.role === 'user').length;
             renderUserTable(filteredUsers);
+            renderUsers(filteredUsers, user); // Corrigido: passa o usuário logado
         } catch (error) {
             console.error('Erro ao buscar usuários:', error);
         }
@@ -117,9 +166,70 @@
             tableBody.appendChild(tr);
         });
     }
+    // Exemplo de dados para teste
+    const users = [
+      { _id: '1', name: 'João', username: 'joao', role: 'user' },
+      { _id: '2', name: 'Maria', username: 'maria', role: 'admin' }
+    ];
+    // Simule o usuário logado como admin para teste
+    const currentUser = { role: 'admin', username: 'admin' };
+
+    function renderUsers(users, currentUser) {
+      const container = document.getElementById('users-list');
+      container.innerHTML = '';
+      users.forEach(user => {
+        const userDiv = document.createElement('div');
+        userDiv.className = 'user-card';
+        userDiv.innerHTML = `
+          <span class="user-name">${user.name || user.username}</span>
+          <span class="user-role">${user.role}</span>
+          ${
+            currentUser && currentUser.role === 'admin' ? `
+            <button class="icon-btn btn-role" title="Alterar papel" onclick="changeRole('${user._id || user.id}')">
+              <span class="material-icons" aria-label="Alterar papel">swap_horiz</span>
+            </button>
+            <button class="icon-btn btn-delete" title="Excluir usuário" onclick="deleteUser('${user._id || user.id}')">
+              <span class="material-icons" aria-label="Excluir">delete</span>
+            </button>
+            ` : ''
+          }
+        `;
+        container.appendChild(userDiv);
+      });
+    }
+    // Funções de ação (implemente conforme necessário)
+    function changeRole(userId) {
+      alert('Alterar papel do usuário: ' + userId);
+    }
+    function deleteUser(userId) {
+      alert('Excluir usuário: ' + userId);
+    }
     document.addEventListener('DOMContentLoaded', function() {
         checkAuthAndSidebar();
         fetchAndRenderUsers();
+        // Adiciona funcionalidade ao botão de sair
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            });
+        }
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        if (sidebarToggle && sidebar && menuOverlay) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                menuOverlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            });
+            menuOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
     });
     </script>
     <script src="../js/init.js"></script>

@@ -6,6 +6,7 @@
     <title>Dashboard - Sistema de Gerenciamento</title>
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="../images/image.png">
 </head>
 <body>
     <!-- Sidebar toggle button for mobile -->
@@ -36,7 +37,7 @@
 
     <main class="content">
         <header class="content-header">
-            <h1>Dashboard</h1>
+            <h1>Dashboard - Boa Parte</h1>
             <div class="user-info">
                 <span class="user-name-display">
                     <i class="fas fa-user"></i> 
@@ -126,5 +127,24 @@
     <script src="../js/init.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="../js/dashboard.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    if (sidebarToggle && sidebar && menuOverlay) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+        menuOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+});
+</script>
 </body>
 </html>

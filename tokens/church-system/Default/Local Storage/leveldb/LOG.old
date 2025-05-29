@@ -1,2 +1,3 @@
-2025/05/29-09:30:40.404 5e08 Creating DB C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\Local Storage\leveldb since it was missing.
-2025/05/29-09:30:40.468 5e08 Reusing MANIFEST C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\Local Storage\leveldb/MANIFEST-000001
+2025/05/29-15:59:48.969 1b84 Reusing MANIFEST C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\Local Storage\leveldb/MANIFEST-000001
+2025/05/29-15:59:49.034 1b84 Recovering log #3
+2025/05/29-15:59:49.041 1b84 Reusing old log C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\Local Storage\leveldb/000003.log 

@@ -6,6 +6,7 @@
     <title>Configuração do WhatsApp</title>    <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/whatsapp-config.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="../images/image.png">
 </head>
 <body>
     <!-- Sidebar toggle button for mobile -->
@@ -33,51 +34,67 @@
             <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
     </nav>
-
-    <div class="whatsapp-container">
-        <main class="content">
-            <header class="content-header">
-                <h1>Configuração do WhatsApp</h1>
-                <div class="user-info">
-                    <span class="user-name-display">
-                        <i class="fas fa-user"></i> 
-                        <span id="userName"></span>
-                    </span>
-                </div>
-            </header>
-            
-            <div class="whatsapp-card">
-                <div class="status-container">
-                    <div class="status-indicator" id="connectionStatus">
-                        <span class="status-dot"></span>
-                        <span class="status-text">Desconectado</span>
-                    </div>
-                </div>
-                
-                <div class="qr-container">
-                    <div id="qrcode">
-                        <p class="loading-text">Aguardando QR Code...</p>
-                    </div>
-                </div>
-
-                <div class="instructions">
-                    <h3>Como conectar:</h3>
-                    <ol>
-                        <li>Abra o WhatsApp no seu celular</li>
-                        <li>Toque em Menu ou Configurações e selecione WhatsApp Web</li>
-                        <li>Aponte seu celular para esta tela para capturar o código QR</li>
-                    </ol>
-                </div>
-
-                <div class="actions">
-                    <button id="refreshBtn" class="btn-secondary" disabled>Atualizar QR Code</button>
-                    <button id="logoutBtn" class="btn-danger" disabled>Desconectar</button>
-                </div>
+<main class="content">
+    <header class="content-header">
+        <h1>Whatsapp-Config - Boa Parte</h1>
+        <div class="user-info">
+            <span class="user-name-display">
+                <i class="fas fa-user"></i>
+                <span id="userName">Carregando...</span>
+            </span>
+        </div>
+    </header>
+    
+    <div class="whatsapp-card">
+        <div class="status-container">
+            <div class="status-indicator" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Desconectado</span>
             </div>
-        </main>
+        </div>
+        
+        <div class="qr-container">
+            <div id="qrcode">
+                <p class="loading-text">Aguardando QR Code...</p>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>Como conectar:</h3>
+            <ol>
+                <li>Abra o WhatsApp no seu celular</li>
+                <li>Toque em Menu ou Configurações e selecione WhatsApp Web</li>
+                <li>Aponte seu celular para esta tela para capturar o código QR</li>
+            </ol>
+        </div>
+
+        <div class="actions">
+            <button id="refreshBtn" class="btn-secondary" disabled>Atualizar QR Code</button>
+            <button id="logoutBtn" class="btn-danger" disabled>Desconectar</button>
+        </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="../js/init.js"></script>
-    <script src="../js/whatsapp-config.js"></script>
+</main>
+<script src="/socket.io/socket.io.js"></script>
+<script src="../js/init.js"></script>
+<script src="../js/whatsapp-config.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    if (sidebarToggle && sidebar && menuOverlay) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+        menuOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+});
+</script>
 </body>
 </html>

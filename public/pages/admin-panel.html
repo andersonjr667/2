@@ -6,37 +6,38 @@
     <title>Painel Administrativo</title>
     <link rel="stylesheet" href="../styles/admin-panel.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
-    <link rel="icon" href="../assets/favicon.ico">
+    <link rel="icon" href="../images/image.png">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+    <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
     <div class="menu-overlay" id="menuOverlay"></div>
-    <aside class="sidebar" id="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="logo-container">
-            <img src="../assets/logo.png" alt="Logo" class="logo">
-        </div>
-        <div class="sidebar-header">
-            <h2>Administração</h2>
+            <img src="../images/image.png" alt="Logo" class="logo">
         </div>
         <ul class="nav-menu">
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="members.html">Membros</a></li>
-            <li><a href="users.html">Usuários</a></li>
-            <li><a href="absent-members.html">Faltantes</a></li>
-            <li><a href="whatsapp-config.html">WhatsApp</a></li>
-            <li><a href="admin-panel.html" class="active">Admin Panel</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
+            <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
+            <li class="admin-only"><a href="users.html"><i class="fas fa-user-cog"></i> Usuários</a></li>
+            <li class="admin-only"><a href="admin-panel.html" class="active"><i class="fas fa-tools"></i> Admin</a></li>
+            <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
         </ul>
         <div class="sidebar-footer">
-            <button id="logoutBtn">Sair</button>
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
-    </aside>
-    <main class="admin-container">
-        <div class="content-header">
-            <h1>Painel Administrativo</h1>
+    </nav>
+    <main class="content">
+        <header class="content-header">
+            <h1>Admin-Panel - Boa Parte</h1>
             <div class="user-info">
-                <span class="user-name-display"><i class="fa fa-user"></i> <span id="userName">Admin</span></span>
+                <span class="user-name-display">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Admin</span>
+                </span>
             </div>
-        </div>
+        </header>
         <section class="admin-sections grid">
             <div class="card">
                 <h2>Estatísticas Gerais</h2>
@@ -76,38 +77,107 @@
     <div class="toast-container" id="toastContainer"></div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Sidebar toggle para mobile
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const menuOverlay = document.getElementById('menuOverlay');
-        sidebarToggle.onclick = () => {
-            sidebar.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-        };
-        menuOverlay.onclick = () => {
-            sidebar.classList.remove('active');
-            menuOverlay.classList.remove('active');
-        };
+        function checkAdminSidebar() {
+            let user = null;
+            try {
+                user = JSON.parse(localStorage.getItem('user'));
+            } catch {}
+            if (!user || user.role !== 'admin') {
+                window.location.href = 'login.html';
+                return false;
+            }
+            // Atualiza nome do usuário no header
+            const userNameEl = document.getElementById('userName');
+            if (userNameEl && user.username) {
+                userNameEl.textContent = user.username;
+            }
+            // Exibe links de admin na sidebar se for admin (força display correto para ícones)
+            document.querySelectorAll('.admin-only').forEach(el => {
+                if (user.role === 'admin') {
+                    if (el.tagName === 'LI') {
+                        el.style.display = 'list-item';
+                    } else if (el.tagName === 'A') {
+                        el.style.display = 'inline-block';
+                    } else {
+                        el.style.display = 'flex';
+                    }
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAdminSidebar()) return;
+            // Sidebar toggle para mobile
+            const sidebarToggle = document.getElementById('sidebarToggle') || document.querySelector('.sidebar-toggle');
+            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+            const menuOverlay = document.getElementById('menuOverlay') || document.querySelector('.menu-overlay');
+            if (sidebarToggle && sidebar && menuOverlay) {
+                sidebarToggle.onclick = function() {
+                    sidebar.classList.toggle('active');
+                    menuOverlay.classList.toggle('active');
+                    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+                };
+                menuOverlay.onclick = function() {
+                    sidebar.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                };
+            }
+            // Corrige botão de sair
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.onclick = function() {
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                };
+            }
+            // Chama estatísticas e logs ao carregar
+            fetchAndRenderStats();
+            fetchAndRenderLogs();
+        });
 
         // Estatísticas Gerais
         async function fetchAndRenderStats() {
             try {
-                // Busca membros, usuários e faltantes dos arquivos locais
-                const [membersRes, usersRes, absentRes] = await Promise.all([
-                    fetch('/db/members.json'),
+                // Busca contatos, usuários e faltantes dos arquivos locais
+                const [contactsRes, usersRes, absentsRes, membersRes] = await Promise.all([
+                    fetch('/db/contacts.json'),
                     fetch('/db/users.json'),
-                    fetch('/db/absentmembers.json')
+                    fetch('/db/absentmembers.json'),
+                    fetch('/db/members.json')
                 ]);
-                const [members, users, absents] = await Promise.all([
-                    membersRes.ok ? membersRes.json() : [],
+                const [contacts, users, absents, members] = await Promise.all([
+                    contactsRes.ok ? contactsRes.json() : [],
                     usersRes.ok ? usersRes.json() : [],
-                    absentRes.ok ? absentRes.json() : []
+                    absentsRes.ok ? absentsRes.json() : [],
+                    membersRes.ok ? membersRes.json() : []
                 ]);
-                document.getElementById('totalMembers').textContent = Array.isArray(members) ? members.length : '--';
-                document.getElementById('totalUsers').textContent = Array.isArray(users) ? users.length : '--';
-                document.getElementById('totalAbsent').textContent = Array.isArray(absents) ? absents.length : '--';
-
-                renderAdminChart(members, absents);
+                // Corrige contagem de membros (members.json)
+                let totalMembers = Array.isArray(members) ? members.filter(m => m && (m.name || m._id)).length : '--';
+                document.getElementById('totalMembers').textContent = totalMembers;
+                // Corrige contagem de usuários (users.json)
+                let totalUsers = Array.isArray(users) ? users.filter(u => u && (u.username || u._id)).length : '--';
+                document.getElementById('totalUsers').textContent = totalUsers;
+                // Corrige contagem de faltantes (absentmembers.json)
+                let totalAbsent = Array.isArray(absents) ? absents.filter(a => a && (a.memberId || a._id)).length : '--';
+                document.getElementById('totalAbsent').textContent = totalAbsent;
+                // Exibe total de visitantes (contatos) no card separado se existir
+                let visitorsCard = document.getElementById('totalVisitors');
+                let totalVisitors = Array.isArray(contacts) ? contacts.filter(c => c && (c.name || c._id)).length : '--';
+                if (!visitorsCard) {
+                  // Cria o card de visitantes se não existir
+                  const statsGrid = document.querySelector('.stats-grid');
+                  const div = document.createElement('div');
+                  div.className = 'stat-card';
+                  div.innerHTML = '<h3>Visitantes</h3><p id="totalVisitors">' + totalVisitors + '</p>';
+                  statsGrid.appendChild(div);
+                } else {
+                  visitorsCard.textContent = totalVisitors;
+                }
+                renderAdminChart(contacts);
             } catch (err) {
                 document.getElementById('totalMembers').textContent = '--';
                 document.getElementById('totalUsers').textContent = '--';
@@ -116,47 +186,62 @@
         }
 
         // Gráfico de Atividades
-        function renderAdminChart(members, absents) {
-            const ctx = document.getElementById('adminChart').getContext('2d');
-            // Exemplo: membros por mês (últimos 6 meses)
+        function renderAdminChart(contacts) {
+            const chartContainer = document.querySelector('.chart-container');
+            let canvas = document.getElementById('adminChart');
+            // Se o canvas foi removido por mensagens anteriores, recria
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                canvas.id = 'adminChart';
+                canvas.height = 180;
+                chartContainer.innerHTML = '';
+                chartContainer.appendChild(canvas);
+            }
+            if (!Array.isArray(contacts) || contacts.length === 0) {
+                chartContainer.innerHTML = '<div style="color:#9e2d4a;text-align:center;padding:2em;">Sem dados suficientes para exibir o gráfico</div>';
+                return;
+            }
+            // Garante que o canvas está visível
+            canvas.style.display = '';
+            // Limpa mensagens anteriores
+            if (chartContainer && chartContainer.querySelector('div')) {
+                chartContainer.innerHTML = '';
+                chartContainer.appendChild(canvas);
+            }
+            const ctx = canvas.getContext('2d');
+            // Gráfico de linhas: contatos adicionados por mês (últimos 6 meses)
             const months = [];
             const now = new Date();
             for (let i = 5; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
                 months.push(d.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
             }
-            const membersByMonth = months.map((label, idx) => {
+            // Conta contatos por mês
+            const contactsByMonth = months.map((label, idx) => {
                 const month = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getMonth();
                 const year = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getFullYear();
-                return (members || []).filter(m => {
-                    const d = new Date(m.createdAt);
+                return contacts.filter(c => {
+                    if (!c || !c.createdAt) return false;
+                    const d = new Date(c.createdAt);
                     return d.getMonth() === month && d.getFullYear() === year;
                 }).length;
             });
-            const absentsByMonth = months.map((label, idx) => {
-                const month = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getMonth();
-                const year = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getFullYear();
-                return (absents || []).filter(a => {
-                    const d = new Date(a.createdAt);
-                    return d.getMonth() === month && d.getFullYear() === year;
-                }).length;
-            });
-
             if (window._adminChart) window._adminChart.destroy();
             window._adminChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: months,
                     datasets: [
                         {
-                            label: 'Novos Membros',
-                            data: membersByMonth,
-                            backgroundColor: '#9e2d4a'
-                        },
-                        {
-                            label: 'Faltantes',
-                            data: absentsByMonth,
-                            backgroundColor: '#c5b89f'
+                            label: 'Contatos adicionados',
+                            data: contactsByMonth,
+                            borderColor: '#9e2d4a',
+                            backgroundColor: 'rgba(158,45,74,0.15)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#9e2d4a',
+                            pointBorderColor: '#9e2d4a',
+                            pointRadius: 4
                         }
                     ]
                 },
@@ -166,7 +251,7 @@
                         legend: { display: true }
                     },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: { beginAtZero: true, precision: 0 }
                     }
                 }
             });
@@ -178,10 +263,11 @@
                 const response = await fetch('/db/logs.json');
                 if (!response.ok) throw new Error('Erro ao buscar logs.json');
                 const logs = await response.json();
-                renderLogs(logs);
+                // Se logs for um array vazio, apenas renderiza logs normalmente
+                renderLogs(Array.isArray(logs) ? logs : []);
             } catch (error) {
-                console.error('Erro ao buscar logs:', error);
-                document.getElementById('systemLogs').innerHTML = '<div class="log-entry error">Erro ao carregar logs</div>';
+                // Só mostra erro se não for array vazio
+                document.getElementById('systemLogs').innerHTML = '<div class="log-entry">Nenhum log encontrado</div>';
             }
         }
 
@@ -208,12 +294,6 @@
         document.getElementById('clearLogsBtn').onclick = function() {
             document.getElementById('systemLogs').innerHTML = '<div class="log-entry">Nenhum log encontrado</div>';
         };
-
-        // Carregar dados ao abrir a página
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchAndRenderStats();
-            fetchAndRenderLogs();
-        });
     </script>
 </body>
 </html>

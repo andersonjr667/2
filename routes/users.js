@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Log = require('../models/Log');
 const { auth, adminOnly } = require('../utils/auth');
 
 // Get all users (apenas autenticado)
@@ -38,6 +39,21 @@ router.post('/', async (req, res) => {
 
         const user = new User(req.body);
         await user.save();
+
+        // Log de criação de usuário
+        await Log.logAction({
+            type: 'create',
+            action: 'create_user',
+            username: req.body.username || req.body.email,
+            description: `Usuário criado: ${user.username || user.email}`,
+            details: {
+                userId: user._id,
+                username: user.username,
+                email: user.email
+            },
+            source: 'user',
+            level: 'info'
+        });
 
         res.status(201).json({
             message: 'Usuário criado com sucesso',
@@ -113,6 +129,20 @@ router.delete('/:id', adminOnly, async (req, res) => {
         }
 
         await user.remove();
+        // Log de exclusão de usuário
+        await Log.logAction({
+            type: 'delete',
+            action: 'delete_user',
+            username: req.userData.username,
+            description: `Usuário excluído: ${user.username}`,
+            details: {
+                userId: user._id,
+                username: user.username,
+                email: user.email
+            },
+            source: 'user',
+            level: 'info'
+        });
         res.json({ message: 'Usuário excluído com sucesso' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao excluir usuário' });

@@ -1,2 +1,3 @@
-2025/05/29-09:30:40.398 5e84 Creating DB C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\shared_proto_db\metadata since it was missing.
-2025/05/29-09:30:40.402 5e84 Reusing MANIFEST C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\shared_proto_db\metadata/MANIFEST-000001
+2025/05/29-15:59:48.942 12e0 Reusing MANIFEST C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\shared_proto_db\metadata/MANIFEST-000001
+2025/05/29-15:59:48.942 12e0 Recovering log #3
+2025/05/29-15:59:48.943 12e0 Reusing old log C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\shared_proto_db\metadata/000003.log 

@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membros Ausentes - Sistema de Gerenciamento</title>    <link rel="stylesheet" href="../styles/styles.css">
+    <title>Membros Ausentes - Sistema de Gerenciamento</title>    
+    <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/absent-members.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="../images/image.png">
 </head>
 <body>
     <!-- Sidebar toggle button for mobile -->
@@ -33,174 +35,176 @@
             <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
     </nav>
-
-    <div class="absent-members-container">
-        <main class="content">
-            <header class="content-header" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 12px; margin-bottom: 18px;">
-                <h1 style="font-size: 2.1em; color: #7c3a1e; font-weight: 800; margin: 0; letter-spacing: 0.01em;">Membros Ausentes</h1>
-                <div class="user-info" style="font-size: 1.1em; color: #7c3a1e;">
-                    <span class="user-name-display">
-                        <i class="fas fa-user"></i> 
-                        <span id="userName"></span>
-                    </span>
-                </div>
-            </header>
-
-            <div class="filters" style="margin-bottom: 24px;">
-                <select id="periodFilter">
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="60">Últimos 60 dias</option>
-                    <option value="90">Últimos 90 dias</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="Buscar ausentes...">
+    <main class="content">
+        <header class="content-header">
+            <h1>Membros Ausentes - Boa Parte</h1>
+            <div class="user-info">
+                <span class="user-name-display">
+                    <i class="fas fa-user"></i>
+                    <span id="userName"></span>
+                </span>
             </div>
+        </header>
 
-            <div class="absent-table" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(80,40,40,0.08); padding: 0 0 18px 0;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Últimas Faltas</th>
-                            <th>Telefone</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="absentList">
-                        <!-- Absent members will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
+        <div class="filters" style="margin-bottom: 24px;">
+            <select id="periodFilter">
+                <option value="30">Últimos 30 dias</option>
+                <option value="60">Últimos 60 dias</option>
+                <option value="90">Últimos 90 dias</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Buscar ausentes...">
+        </div>
 
-            <!-- Modal for justification -->
-            <div id="justificationModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Justificar Ausência</h2>
-                    <form id="justificationForm">
-                        <div class="form-group">
-                            <label for="justification">Motivo da Ausência</label>
-                            <textarea id="justification" name="justification" required></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="primary-button">Salvar</button>
-                            <button type="button" class="secondary-button close-modal">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="absent-table" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(80,40,40,0.08); padding: 0 0 18px 0;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Últimas Faltas</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="absentList">
+                    <!-- Absent members will be loaded here -->
+                </tbody>
+            </table>
+        </div>
 
-            <!-- Modal for WhatsApp message -->
-            <div id="messageModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h2>Enviar Mensagem</h2>
-                    <form id="messageForm">
-                        <div class="form-group">
-                            <label for="message">Mensagem</label>
-                            <textarea id="message" name="message" required></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="primary-button">Enviar</button>
-                            <button type="button" class="secondary-button close-modal">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="absent-list-container" style="margin-top: 36px; background: #f9f6f2; border-radius: 12px; box-shadow: 0 2px 8px rgba(80,40,40,0.06); padding: 18px 12px 18px 12px; max-width: 1200px; margin-left: auto; margin-right: auto;">
-                <div class="quick-list-header" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; width: 100%; max-width: 1200px;">
-                    <h2 style="font-size: 1.25em; color: #7c3a1e; font-weight: 700; margin: 0; text-align: left; flex: 1;">Lista de Chamada Rápida</h2>
-                    <div style="display: flex; gap: 0; align-items: center;">
-                        <button id="saveAbsentBtn" class="primary-button" title="Salvar Chamada" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.45em; padding: 0; border-radius: 10px; margin-right: 8px;">
-                            <i class="fas fa-save"></i>
-                        </button>
-                        <button id="notifyAllBtn" class="primary-button" title="Notificar Todos" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.45em; background: #2d6a4f; padding: 0; border-radius: 10px;">
-                            <i class="fas fa-bell"></i>
-                        </button>
+        <!-- Modal for justification -->
+        <div id="justificationModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Justificar Ausência</h2>
+                <form id="justificationForm">
+                    <div class="form-group">
+                        <label for="justification">Motivo da Ausência</label>
+                        <textarea id="justification" name="justification" required></textarea>
                     </div>
-                </div>
-                <ul id="quickAbsentList" class="quick-absent-list" aria-label="Lista de chamada rápida" style="width: 100%; max-width: 1200px;"></ul>
-                <div id="saveFeedback" class="save-feedback" role="status" aria-live="polite" style="display:none;"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary-button">Salvar</button>
+                        <button type="button" class="secondary-button close-modal">Cancelar</button>
+                    </div>
+                </form>
             </div>
-        </main>
-    </div>    <script src="/socket.io/socket.io.js"></script>
-    <script src="../js/init.js"></script>
-    <script src="../js/absent-members.js"></script>
-    <script>
+        </div>
+
+        <!-- Modal for WhatsApp message -->
+        <div id="messageModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Enviar Mensagem</h2>
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label for="message">Mensagem</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary-button">Enviar</button>
+                        <button type="button" class="secondary-button close-modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="absent-list-container" style="margin-top: 36px; background: #f9f6f2; border-radius: 12px; box-shadow: 0 2px 8px rgba(80,40,40,0.06); padding: 18px 12px 18px 12px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+            <div class="quick-list-header" style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 10px; width: 100%; max-width: 1200px;">
+                <h2 style="font-size: 1.25em; color: #7c3a1e; font-weight: 700; margin: 0; text-align: left; flex: 1;">Lista de Chamada Rápida</h2>
+                <div style="display: flex; gap: 0; align-items: center;">
+                    <button id="saveAbsentBtn" class="primary-button" title="Salvar Chamada" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.45em; padding: 0; border-radius: 10px; margin-right: 8px;">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button id="notifyAllBtn" class="primary-button" title="Notificar Todos" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.45em; background: #2d6a4f; padding: 0; border-radius: 10px;">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+            </div>
+            <ul id="quickAbsentList" class="quick-absent-list" aria-label="Lista de chamada rápida" style="width: 100%; max-width: 1200px;"></ul>
+            <div id="saveFeedback" class="save-feedback" role="status" aria-live="polite" style="display:none;"></div>
+        </div>
+    </main>
+</div>    <script src="/socket.io/socket.io.js"></script>
+<script src="../js/init.js"></script>
+<script src="../js/absent-members.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Mobile menu functionality
         const sidebarToggle = document.querySelector('.sidebar-toggle');
         const sidebar = document.querySelector('.sidebar');
         const menuOverlay = document.querySelector('.menu-overlay');
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('active');
-            menuOverlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        if (sidebarToggle && sidebar && menuOverlay) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                menuOverlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            });
+            menuOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
         }
-
-        sidebarToggle.addEventListener('click', toggleSidebar);
-        menuOverlay.addEventListener('click', toggleSidebar);
 
         // Logout functionality
         document.getElementById('logoutBtn').addEventListener('click', () => {
             window.location.href = '/pages/login.html';
         });
 
-        // Lista fornecida
-        const members = [
-            { name: "Alyne", phone: "+55 31 99325-9908" },
-            { name: "Alysson", phone: "+55 31 98435-3383" },
-            { name: "Ana", phone: "+55 31 98740-1274" },
-            { name: "André", phone: "+55 31 98781-2303" },
-            { name: "Arthur 🫒", phone: "+55 31 98683-2164" },
-            { name: "Arthur 🤓", phone: "+55 31 98774-8972" },
-            { name: "Bianca", phone: "+55 31 97595-3540" },
-            { name: "Davi", phone: "+55 31 99561-1124" },
-            { name: "Débora", phone: "+55 31 99234-4897" },
-            { name: "Dudah", phone: "+55 31 99535-9296" },
-            { name: "Elias", phone: "+55 31 99750-6403" },
-            { name: "Ester", phone: "+55 31 98267-0832" },
-            { name: "Gabi J.", phone: "+55 31 98525-2076" },
-            { name: "Gabi Deps (Amiga Larissa)", phone: "+55 31 97116-4949" },
-            { name: "Heitor", phone: "+55 31 98023-0446" },
-            { name: "Ian", phone: "+55 31 98934-6041" },
-            { name: "Ingryd", phone: "+55 31 98886-8991" },
-            { name: "Isaac", phone: "+55 31 97165-2421" },
-            { name: "João Paulo (irmão Luiz)", phone: "+55 31 98938-3386" },
-            { name: "João Pedro (primo Mari)", phone: "+55 31 99157-8504" },
-            { name: "Juninho", phone: "+55 31 97153-3882" },
-            { name: "Julia", phone: "+55 31 99838-8190" },
-            { name: "Kaique", phone: "+55 31 99393-5510" },
-            { name: "Larissa", phone: "+55 31 99503-3990" },
-            { name: "Laura(Luan)", phone: "+55 31 99762-1357" },
-            { name: "Laura", phone: "+55 31 98425-8629" },
-            { name: "Lu", phone: "+55 31 99393-9752" },
-            { name: "Luan", phone: "+55 31 99979-2892" },
-            { name: "Luiz (irmão João)", phone: "+55 31 98546-4249" },
-            { name: "Luiz (outro Luiz)", phone: "+55 31 99529-7164" },
-            { name: "Manu Melo", phone: "+55 31 98944-6562" },
-            { name: "Maria", phone: "+55 31 97266-0695" },
-            { name: "Mari C", phone: "+55 31 99301-4289" },
-            { name: "Mari (amiga Roberta)", phone: "+55 31 97174-7001" },
-            { name: "Mari T", phone: "+55 31 98395-1289" },
-            { name: "Mariana Andrade (amiga Maria e Tata)", phone: "+55 31 97316-6612" },
-            { name: "Mateus(líder)", phone: "+55 33 98888-2030" },
-            { name: "Matheuzinn", phone: "+55 31 99129-9240" },
-            { name: "Nicolas", phone: "+55 31 98570-2117" },
-            { name: "Paulo", phone: "+55 31 97193-8925" },
-            { name: "Pedro", phone: "+55 31 99260-1919" },
-            { name: "Rafique", phone: "+55 31 98200-3128" },
-            { name: "Richard", phone: "+55 31 99995-4812" },
-            { name: "Roberta", phone: "+55 31 98958-0017" },
-            { name: "Sabrina", phone: "+55 31 99556-0774" },
-            { name: "Talita", phone: "+55 31 98706-3884" },
-            { name: "Thayná", phone: "+55 33 99942-4001" },
-            { name: "Thiago", phone: "+55 31 98724-5639" },
-            { name: "Thais", phone: "+55 31 99774-1862" },
-            { name: "Val", phone: "+55 31 98739-7393" },
-            { name: "Vivi", phone: "+55 31 98911-8778" }
-        ];
+    const members = [
+        { name: "Anderson Jr (Juninho)", phone: "+55 31 97153-3882" },
+        { name: "Alyne", phone: "+55 31 99325-9908" },
+        { name: "Alysson", phone: "+55 31 98435-3383" },
+        { name: "Ana Luiza", phone: "+55 31 98740-1274" },
+        { name: "André", phone: "+55 31 98781-2303" },
+        { name: "Arthur 🫒", phone: "+55 31 98683-2164" },
+        { name: "Arthur 🤓", phone: "+55 31 98774-8972" },
+        { name: "Bianca Vargas", phone: "+55 31 97595-3540" },
+        { name: "Davi", phone: "+55 31 99561-1124" },
+        { name: "Débora", phone: "+55 31 99234-4897" },
+        { name: "Dudah", phone: "+55 31 99535-9296" },
+        { name: "Elias", phone: "+55 31 99750-6403" },
+        { name: "Ester Tigre", phone: "+55 31 98267-0832" },
+        { name: "Gabi Deps (Amiga Larissa)", phone: "+55 31 97116-4949" },
+        { name: "Gabi.", phone: "+55 31 98525-2076" },
+        { name: "Heitor", phone: "+55 31 98023-0446" },
+        { name: "Ian", phone: "+55 31 98934-6041" },
+        { name: "Ingryd Rocha", phone: "+55 31 98886-8991" },
+        { name: "Isaac Takahashi", phone: "+55 31 97165-2421" },
+        { name: "João Paulo (Irmão Luiz)", phone: "+55 31 98938-3386" },
+        { name: "João Pedro (Primo Mari)", phone: "+55 31 99157-8504" },
+        { name: "Julia", phone: "+55 31 99838-8190" },
+        { name: "Kaique", phone: "+55 31 99393-5510" },
+        { name: "Larissa", phone: "+55 31 99503-3990" },
+        { name: "Laura", phone: "+55 31 98425-8629" },
+        { name: "Laura(Luan)", phone: "+55 31 99762-1357" },
+        { name: "Lu", phone: "+55 31 99393-9752" },
+        { name: "Luan", phone: "+55 31 99979-2892" },
+        { name: "Luiz (Irmão João)", phone: "+55 31 98546-4249" },
+        { name: "Luiz (Outro Luiz)", phone: "+55 31 99529-7164" },
+        { name: "Manu Melo", phone: "+55 31 98944-6562" },
+        { name: "Mari (Amiga Roberta)", phone: "+55 31 97174-7001" },
+        { name: "Mari C", phone: "+55 31 99301-4289" },
+        { name: "Mari T", phone: "+55 31 98395-1289" },
+        { name: "Maria", phone: "+55 31 97266-0695" },
+        { name: "Mariana Andrade (Amiga Maria e Tata)", phone: "+55 31 97316-6612" },
+        { name: "Mateus(líder)", phone: "+55 33 98888-2030" },
+        { name: "Matheuzinn", phone: "+55 31 99129-9240" },
+        { name: "Nicolas", phone: "+55 31 98570-2117" },
+        { name: "Paulo", phone: "+55 31 97193-8925" },
+        { name: "Pedro", phone: "+55 31 99260-1919" },
+        { name: "Rafique", phone: "+55 31 98200-3128" },
+        { name: "Richard", phone: "+55 31 99995-4812" },
+        { name: "Roberta", phone: "+55 31 98958-0017" },
+        { name: "Sabrina", phone: "+55 31 99556-0774" },
+        { name: "Talita", phone: "+55 31 98706-3884" },
+        { name: "Thais", phone: "+55 31 99774-1862" },
+        { name: "Thayná", phone: "+55 33 99942-4001" },
+        { name: "Pr.Thiago", phone: "+55 31 98724-5639" },
+        { name: "Valquiria", phone: "+55 31 98739-7393" },
+        { name: "Vivi", phone: "+55 31 98911-8778" }
+    ];
+
         const quickAbsentList = document.getElementById('quickAbsentList');
         const absentState = {};
         let currentDateKey = getCurrentDateKey();
@@ -284,8 +288,9 @@
 
         // Inicialização
         renderQuickAbsentList();
-    </script>
-    <style>
+    });
+</script>
+<style>
 .quick-absent-list {
     list-style: none;
     padding: 0;

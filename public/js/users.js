@@ -69,3 +69,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Nenhum código interferindo na renderização dos botões dos usuários

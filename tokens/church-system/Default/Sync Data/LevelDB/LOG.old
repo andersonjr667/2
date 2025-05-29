@@ -1,2 +1,3 @@
-2025/05/29-09:30:40.324 274 Creating DB C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\Sync Data\LevelDB since it was missing.
-2025/05/29-09:30:40.330 274 Reusing MANIFEST C:\Users\User\OneDrive\Área de Trabalho\Geral\Codes\HTML\Nova pasta\tokens\church-system\Default\Sync Data\LevelDB/MANIFEST-000001
+2025/05/29-15:59:48.782 2eec Reusing MANIFEST C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\Sync Data\LevelDB/MANIFEST-000001
+2025/05/29-15:59:48.806 2eec Recovering log #3
+2025/05/29-15:59:48.807 2eec Reusing old log C:\Users\Aluno_Tarde\Desktop\2\tokens\church-system\Default\Sync Data\LevelDB/000003.log 
