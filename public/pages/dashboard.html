@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Gerenciamento</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar toggle button for mobile -->
+    <button class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Menu overlay for mobile -->
+    <div class="menu-overlay"></div>
+
+    <div class="logo-container">
+        <img src="../images/image.png" alt="Logo" class="logo">
+    </div>
+
+    <nav class="sidebar">
+        <ul class="nav-menu">
+            <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
+            <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
+            <li class="admin-only"><a href="users.html"><i class="fas fa-user-cog"></i> Usuários</a></li>
+            <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
+            <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </div>
+    </nav>
+
+    <main class="content">
+        <header class="content-header">
+            <h1>Dashboard</h1>
+            <div class="user-info">
+                <span class="user-name-display">
+                    <i class="fas fa-user"></i> 
+                    <span id="userName">Carregando...</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="error-container" id="errorContainer" style="display: none;">
+            <p class="error-message">Erro ao carregar dados. Por favor, faça login novamente.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3><i class="fas fa-address-book"></i> Total de Contatos</h3>
+                <p id="totalContacts">0</p>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-calendar-check"></i> Contatos Hoje</h3>
+                <p id="todayAttendance">0</p>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> Visitantes</h3>
+                <p id="totalVisitors">0</p>
+            </div>
+        </div>
+
+        <section class="quick-add-section">
+            <h2><i class="fas fa-plus-circle"></i> Adicionar Contato Rápido</h2>
+            <form class="quick-add-form" id="quickAddForm">
+                <div class="form-group">
+                    <label for="quickName">Nome</label>
+                    <input type="text" id="quickName" required>
+                </div>
+                <div class="form-group">
+                    <label for="quickPhone">Telefone</label>
+                    <input type="tel" id="quickPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="quickBirthday">Data de Aniversário <small>(Opcional)</small></label>
+                    <input type="date" id="quickBirthday">
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="quickAddContactBtn">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <div class="recent-activity">
+            <h2><i class="fas fa-history"></i> Contatos Recentes</h2>
+            <div id="activityList" class="activity-list">
+                <div class="activity-header">
+                    <div class="activity-col">Nome</div>
+                    <div class="activity-col">Número</div>
+                    <div class="activity-col">Data de Adição</div>
+                    <div class="activity-col">Aniversário</div>
+                    <div class="activity-col">Status Mensagem</div>
+                    <div class="activity-col">Ações</div>
+                </div>
+                <!-- Activities will be inserted here -->
+                <div class="loading-message">Carregando contatos...</div>
+            </div>
+        </div>
+
+        <!-- Dropdown de Ações (movido para dentro do main) -->
+        <div id="actionDropdown" class="action-dropdown">
+            <div class="action-dropdown-content">
+                <button class="action-btn" data-action="message">
+                    <i class="fas fa-comment"></i> Enviar Mensagem
+                </button>
+                <button class="action-btn" data-action="edit">
+                    <i class="fas fa-edit"></i> Editar Contato
+                </button>
+                <button class="action-btn" data-action="delete">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+                <button class="action-btn" data-action="convert">
+                    <i class="fas fa-user-plus"></i> Converter em Membro
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/init.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

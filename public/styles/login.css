@@ -1,0 +1,186 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #9e2d4a 0%, #450b1e 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* Adicionado para posicionamento dos círculos */
+    overflow: hidden; /* Garante que os círculos não criem barras de rolagem */
+}
+
+/* Círculos vermelhos decorativos */
+body::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(158, 45, 74, 0.3) 20px, transparent 100px),
+        radial-gradient(circle at 90% 40%, rgba(158, 45, 74, 0.4) 30px, transparent 150px),
+        radial-gradient(circle at 30% 70%, rgba(158, 45, 74, 0.25) 25px, transparent 120px),
+        radial-gradient(circle at 70% 15%, rgba(158, 45, 74, 0.35) 40px, transparent 170px);
+    z-index: -1;
+    animation: float 25s infinite linear;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(-5px, -5px);
+    }
+    50% {
+        transform: translate(-10px, 0);
+    }
+    75% {
+        transform: translate(0, -5px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* Nova estilização para o container do logo */
+.logo-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    text-align: center;
+    padding: 0;
+    background: none;
+    z-index: 1000;
+}
+
+.logo {
+    width: 80px; /* Tamanho reduzido do logo */
+    height: auto;
+    padding: 5px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    color: #9e2d4a;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #450b1e;
+    font-weight: 500;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #c5b89f;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    background: var(--card-background);
+    color: var(--text-color);
+}
+
+input:focus {
+    border-color: #9e2d4a;
+    outline: none;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    cursor: pointer;
+    color: #666;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: #9e2d4a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #450b1e;
+}
+
+.error-message {
+    color: #f44336;
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+.error-message.show {
+    display: block;
+}
+
+.login-footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.login-footer a {
+    color: #9e2d4a;
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    color: white;
+    display: none;
+}
+
+.toast-error {
+    background: #450b1e;
+}

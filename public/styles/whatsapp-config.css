@@ -1,0 +1,114 @@
+/* Import common styles */
+@import url('dashboard.css');
+
+/* WhatsApp Config Styles */
+.whatsapp-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    padding: 20px;
+}
+
+.whatsapp-card {
+    background: var(--card-background);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.whatsapp-card h1 {
+    color: var(--text-color);
+    margin-bottom: 30px;
+}
+
+.status-container {
+    margin-bottom: 30px;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--color1);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--danger-color);
+}
+
+.status-indicator.connected .status-dot {
+    background-color: var(--success-color);
+}
+
+.status-text {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.qr-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-text {
+    color: var(--text-color);
+    font-style: italic;
+}
+
+.instructions {
+    text-align: left;
+    margin: 30px 0;
+    padding: 20px;
+    background: var(--color1);
+    border-radius: 8px;
+}
+
+.instructions h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+.instructions ol {
+    color: var(--text-color);
+    padding-left: 20px;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

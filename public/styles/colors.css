@@ -1,0 +1,37 @@
+:root {
+    /* Color Palette */
+    --color1: #c5b89f;  /* Soft beige - Secondary elements */
+    --color2: #feffd4;  /* Light cream - Backgrounds */
+    --color3: #9e2d4a;  /* Deep rose - Primary actions */
+    --color4: #450b1e;  /* Dark burgundy - Text */
+    --color5: #21000f;  /* Near black - Dark elements */
+
+    /* Functional Colors */
+    --background-color: var(--color2);
+    --text-color: var(--color4);
+    --primary-color: var(--color3);
+    --secondary-color: var(--color1);
+    --dark-accent: var(--color5);
+    
+    /* Component Colors */
+    --button-primary-bg: var(--color3);
+    --button-primary-text: var(--color2);
+    --button-secondary-bg: var(--color1);
+    --button-secondary-text: var(--color5);
+    
+    /* Navigation */
+    --nav-background: var(--color5);
+    --nav-text: var(--color2);
+    --nav-hover: var(--color4);
+    
+    /* Cards */
+    --card-background: white;
+    --card-border: var(--color1);
+    --card-shadow: 0 2px 4px rgba(33, 0, 15, 0.1);
+    
+    /* Status Colors */
+    --success-color: var(--color3);
+    --warning-color: var(--color1);
+    --danger-color: var(--color4);
+    --info-color: var(--color2);
+}

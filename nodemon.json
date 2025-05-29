@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "church-system.json",
+    "db/*",
+    "session_version.json"
+  ]
+}

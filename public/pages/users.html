@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários do Sistema</title>
+    <link rel="stylesheet" href="../styles/dashboard.css">
+    <link rel="stylesheet" href="../styles/users.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+    <div class="menu-overlay"></div>
+    <div class="logo-container">
+        <img src="../images/image.png" alt="Logo" class="logo">
+    </div>
+    <nav class="sidebar">
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
+            <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
+            <li class="admin-only"><a href="users.html" class="active"><i class="fas fa-user-cog"></i> Usuários</a></li>
+            <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
+            <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </div>
+    </nav>
+    <main class="content">
+        <header class="content-header" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 12px; margin-bottom: 18px;">
+            <h1 style="font-size: 2.1em; color: #7c3a1e; font-weight: 800; margin: 0; letter-spacing: 0.01em;">Usuários do Sistema</h1>
+            <div class="user-info" style="font-size: 1.1em; color: #7c3a1e;">
+                <span class="user-name-display">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Carregando...</span>
+                </span>
+            </div>
+        </header>
+        <div class="users-stats-cards">
+            <div class="users-card total-users">
+                <div class="users-card-title"><i class="fas fa-users"></i> Total de Usuários</div>
+                <div class="users-card-value" id="totalUsers">0</div>
+            </div>
+            <div class="users-card total-admins">
+                <div class="users-card-title"><i class="fas fa-user-shield"></i> Total de Admins</div>
+                <div class="users-card-value" id="totalAdmins">0</div>
+            </div>
+            <div class="users-card total-normal-users">
+                <div class="users-card-title"><i class="fas fa-user"></i> Total de Usuarios/Users</div>
+                <div class="users-card-value" id="totalNormalUsers">0</div>
+            </div>
+        </div>
+        <div class="users-container">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Nome de Usuário</th>
+                        <th>Função</th>
+                        <th>Criado em</th>
+                        <th>ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Conteúdo dinâmico -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+    // Exibe nome do usuário logado e links de admin se for admin
+    function checkAuthAndSidebar() {
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('user'));
+        } catch {}
+        if (user && user.username) {
+            document.getElementById('userName').textContent = user.username;
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = (user.role === 'admin') ? '' : 'none';
+            });
+        } else {
+            document.getElementById('userName').textContent = 'Usuário';
+            document.querySelectorAll('.admin-only').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+    }
+    // Busca usuários do arquivo JSON e renderiza cards de totais e tabela
+    async function fetchAndRenderUsers() {
+        try {
+            const response = await fetch('/db/users.json');
+            if (!response.ok) {
+                throw new Error('Erro ao buscar users.json');
+            }
+            const users = await response.json();
+            const filteredUsers = users.filter(u => u.username);
+            document.getElementById('totalUsers').textContent = filteredUsers.length;
+            document.getElementById('totalAdmins').textContent = filteredUsers.filter(u => u.role === 'admin').length;
+            document.getElementById('totalNormalUsers').textContent = filteredUsers.filter(u => u.role === 'user').length;
+            renderUserTable(filteredUsers);
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+        }
+    }
+    function renderUserTable(users) {
+        const tableBody = document.querySelector('#usersTable tbody');
+        tableBody.innerHTML = '';
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.username}</td>
+                <td>${user.role ? user.role : '-'}</td>
+                <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+                <td>${user._id || '-'}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAuthAndSidebar();
+        fetchAndRenderUsers();
+    });
+    </script>
+    <script src="../js/init.js"></script>
+</body>
+</html>

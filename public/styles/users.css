@@ -1,0 +1,135 @@
+/* users.css - Estilo para a página de usuários */
+.users-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(80,40,40,0.08);
+    padding: 32px 24px 24px 24px;
+}
+.users-title {
+    color: #7c1e1e;
+    font-size: 2em;
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.users-table th, .users-table td {
+    padding: 14px 12px;
+    text-align: left;
+}
+.users-table th {
+    background: #f9f6f2;
+    color: #7c1e1e;
+    font-weight: 700;
+}
+.users-table tr:nth-child(even) {
+    background: #f7f7f7;
+}
+.users-table tr:nth-child(odd) {
+    background: #fff;
+}
+.role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.98em;
+    font-weight: 600;
+    color: #fff;
+}
+.role-admin { background: #2d6a4f; }
+.role-user { background: #7c3a1e; }
+/* Cards de totais */
+.users-stats-cards {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.users-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 18px 32px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.2s;
+}
+.users-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.users-card-title {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.users-card-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #7e072b;
+}
+
+/* Tabela de usuários */
+#usersTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-bottom: 32px;
+}
+#usersTable th, #usersTable td {
+    padding: 14px 18px;
+    text-align: left;
+}
+#usersTable th {
+    background: #f5f7fa;
+    color: #7e072b;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 2px solid #eaeaea;
+}
+#usersTable tr:nth-child(even) {
+    background: #f9fafb;
+}
+#usersTable tr:hover {
+    background: #f1f7ff;
+}
+
+@media (max-width: 600px) {
+    .users-container {
+        padding: 10px 2px 10px 2px;
+    }
+    .users-title {
+        font-size: 1.2em;
+    }
+    .users-table th, .users-table td {
+        padding: 7px 4px;
+        font-size: 0.97em;
+    }
+}
+@media (max-width: 700px) {
+    .users-stats-cards {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .users-card {
+        min-width: unset;
+        width: 100%;
+        padding: 16px 10px;
+    }
+    #usersTable th, #usersTable td {
+        padding: 10px 6px;
+        font-size: 0.98rem;
+    }
+}

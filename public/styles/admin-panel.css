@@ -1,0 +1,368 @@
+/* Importa variáveis globais e estilos comuns */
+@import url('colors.css');
+
+body {
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 16px 48px 16px;
+}
+
+.content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+.content-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.user-name-display {
+    font-weight: 500;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.user-name-display i {
+    color: var(--primary-color);
+}
+
+/* Grid de seções */
+.admin-sections.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+@media (max-width: 1100px) {
+    .admin-sections.grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+/* Cards */
+.card {
+    background: var(--button-primary-text);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(30,41,59,0.06);
+    padding: 28px 24px 24px 24px;
+    margin-bottom: 0;
+    position: relative;
+    min-width: 0;
+    border: 1px solid var(--secondary-color);
+    transition: box-shadow 0.2s;
+}
+.card:hover {
+    box-shadow: 0 4px 24px rgba(30,41,59,0.12);
+}
+.card h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 18px;
+}
+
+/* Estatísticas */
+.stats-grid {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+.stat-card {
+    flex: 1 1 120px;
+    background: var(--secondary-color);
+    border-radius: 10px;
+    padding: 18px 12px;
+    text-align: center;
+    min-width: 120px;
+    color: var(--dark-accent);
+    box-shadow: 0 1px 4px rgba(30,41,59,0.04);
+}
+.stat-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+}
+.stat-card p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--dark-accent);
+}
+
+/* Gráficos */
+.chart-container {
+    background: var(--button-primary-text);
+    border-radius: 10px;
+    padding: 18px 12px;
+    box-shadow: 0 1px 4px rgba(30,41,59,0.04);
+    margin-bottom: 24px;
+}
+@media (max-width: 600px) {
+    .chart-container {
+        padding: 10px 4px;
+    }
+}
+
+/* Logs do sistema */
+.system-logs {
+    background: var(--button-primary-text);
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(30,41,59,0.04);
+    padding: 18px 12px;
+    margin-top: 24px;
+}
+.logs-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.logs-container {
+    max-height: 320px;
+    overflow-y: auto;
+    background: var(--background-color);
+    border-radius: 6px;
+    padding: 8px 6px;
+    border: 1px solid var(--secondary-color);
+}
+#systemLogs {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.log-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #ececec;
+}
+.log-entry:last-child {
+    border-bottom: none;
+}
+.log-timestamp {
+    font-size: 0.85em;
+    color: var(--secondary-color);
+    min-width: 90px;
+}
+.log-level {
+    font-weight: 600;
+    margin-right: 6px;
+}
+.log-message {
+    flex: 1;
+}
+.log-entry.info .log-level { color: var(--primary-color); }
+.log-entry.warn .log-level { color: #f59e42; }
+.log-entry.error .log-level { color: #ef4444; }
+
+/* Botões */
+button, .btn {
+    background: var(--button-primary-bg);
+    color: var(--button-primary-text);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:hover, .btn:hover {
+    background: var(--primary-color);
+    color: var(--button-primary-text);
+}
+
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+}
+.toast {
+    background: #ef4444;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(30,41,59,0.10);
+}
+
+/* Sidebar (importado e adaptado do dashboard.css) */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: var(--nav-background);
+    padding-top: 120px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 900;
+    transition: transform 0.3s ease;
+}
+.logo-container {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--nav-background);
+    border-bottom: 1px solid var(--primary-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    z-index: 1000;
+}
+.logo {
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+    padding: 5px;
+    background: white;
+}
+.sidebar-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--primary-color);
+}
+.sidebar-header h2 {
+    color: var(--button-primary-text);
+    font-size: 1.2rem;
+}
+.nav-menu {
+    list-style: none;
+    padding: 15px 0;
+}
+.nav-menu li a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    padding: 12px 20px;
+    display: block;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border-radius: 6px;
+}
+.nav-menu li a:hover,
+.nav-menu li a.active {
+    background: var(--primary-color);
+    color: var(--button-primary-text);
+    padding-left: 25px;
+}
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid var(--primary-color);
+}
+#logoutBtn {
+    width: 100%;
+    padding: 10px;
+    background: var(--primary-color);
+    color: var(--button-primary-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+#logoutBtn:hover {
+    background: var(--color4);
+}
+
+/* Responsividade sidebar */
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: var(--primary-color);
+    border: none;
+    color: var(--button-primary-text);
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+@media (max-width: 768px) {
+    .sidebar-toggle {
+        display: block;
+    }
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .logo-container {
+        height: 80px;
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: var(--nav-background);
+    }
+    .logo {
+        max-width: 60px;
+    }
+}
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 899;
+}
+.menu-overlay.active {
+    display: block;
+}
+
+/* Cores para gráficos (usadas via JS) */
+:root {
+    --chart-color-1: #331436; /* Substitui o vinho escuro atual */
+    --chart-color-2: #7A1745; /* Um tom de vinho mais vibrante */
+    --chart-color-3: #CB4F57; /* Coral/rosado mais suave */
+    --chart-color-4: #EB9961; /* Laranja pastel */
+    --chart-color-5: #FCF4B6; /* Amarelo claro */
+    --chart-color-6: #331436; /* Reutiliza o roxo escuro para consistência */
+    --chart-color-7: #7A1745; /* Reutiliza o vinho */
+    --chart-color-8: #CB4F57; /* Reforça o vermelho coral */
+}
+
+@media (max-width: 900px) {
+    .admin-container {
+        padding: 16px 4px 32px 4px;
+    }
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .admin-sections.grid {
+        gap: 16px;
+    }
+}
+@media (max-width: 600px) {
+    .card, .system-logs, .chart-container {
+        padding: 12px 4px;
+    }
+    .stats-grid {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
