@@ -75,7 +75,6 @@
     </main>
     <div class="toast-container" id="toastContainer"></div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/admin-panel.js"></script>
     <script>
         // Sidebar toggle para mobile
         const sidebar = document.getElementById('sidebar');
@@ -89,6 +88,132 @@
             sidebar.classList.remove('active');
             menuOverlay.classList.remove('active');
         };
+
+        // Estatísticas Gerais
+        async function fetchAndRenderStats() {
+            try {
+                // Busca membros, usuários e faltantes dos arquivos locais
+                const [membersRes, usersRes, absentRes] = await Promise.all([
+                    fetch('/db/members.json'),
+                    fetch('/db/users.json'),
+                    fetch('/db/absentmembers.json')
+                ]);
+                const [members, users, absents] = await Promise.all([
+                    membersRes.ok ? membersRes.json() : [],
+                    usersRes.ok ? usersRes.json() : [],
+                    absentRes.ok ? absentRes.json() : []
+                ]);
+                document.getElementById('totalMembers').textContent = Array.isArray(members) ? members.length : '--';
+                document.getElementById('totalUsers').textContent = Array.isArray(users) ? users.length : '--';
+                document.getElementById('totalAbsent').textContent = Array.isArray(absents) ? absents.length : '--';
+
+                renderAdminChart(members, absents);
+            } catch (err) {
+                document.getElementById('totalMembers').textContent = '--';
+                document.getElementById('totalUsers').textContent = '--';
+                document.getElementById('totalAbsent').textContent = '--';
+            }
+        }
+
+        // Gráfico de Atividades
+        function renderAdminChart(members, absents) {
+            const ctx = document.getElementById('adminChart').getContext('2d');
+            // Exemplo: membros por mês (últimos 6 meses)
+            const months = [];
+            const now = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push(d.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
+            }
+            const membersByMonth = months.map((label, idx) => {
+                const month = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getMonth();
+                const year = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getFullYear();
+                return (members || []).filter(m => {
+                    const d = new Date(m.createdAt);
+                    return d.getMonth() === month && d.getFullYear() === year;
+                }).length;
+            });
+            const absentsByMonth = months.map((label, idx) => {
+                const month = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getMonth();
+                const year = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1).getFullYear();
+                return (absents || []).filter(a => {
+                    const d = new Date(a.createdAt);
+                    return d.getMonth() === month && d.getFullYear() === year;
+                }).length;
+            });
+
+            if (window._adminChart) window._adminChart.destroy();
+            window._adminChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: 'Novos Membros',
+                            data: membersByMonth,
+                            backgroundColor: '#9e2d4a'
+                        },
+                        {
+                            label: 'Faltantes',
+                            data: absentsByMonth,
+                            backgroundColor: '#c5b89f'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Função para buscar logs do sistema do arquivo JSON
+        async function fetchAndRenderLogs() {
+            try {
+                const response = await fetch('/db/logs.json');
+                if (!response.ok) throw new Error('Erro ao buscar logs.json');
+                const logs = await response.json();
+                renderLogs(logs);
+            } catch (error) {
+                console.error('Erro ao buscar logs:', error);
+                document.getElementById('systemLogs').innerHTML = '<div class="log-entry error">Erro ao carregar logs</div>';
+            }
+        }
+
+        // Função para renderizar logs no painel
+        function renderLogs(logs) {
+            const logsContainer = document.getElementById('systemLogs');
+            if (!logs || logs.length === 0) {
+                logsContainer.innerHTML = '<div class="log-entry">Nenhum log encontrado</div>';
+                return;
+            }
+            logsContainer.innerHTML = logs.map(log => `
+                <div class="log-entry ${log.level || 'info'}">
+                    <span class="log-timestamp">${log.createdAt ? new Date(log.createdAt).toLocaleString() : ''}</span>
+                    <span class="log-level">${log.level || 'info'}</span>
+                    <span class="log-message">${log.action || ''} - ${log.description || ''}</span>
+                </div>
+            `).join('');
+        }
+
+        // Botão de atualizar logs
+        document.getElementById('refreshLogsBtn').onclick = fetchAndRenderLogs;
+
+        // Botão de limpar logs (apenas frontend, não apaga no backend)
+        document.getElementById('clearLogsBtn').onclick = function() {
+            document.getElementById('systemLogs').innerHTML = '<div class="log-entry">Nenhum log encontrado</div>';
+        };
+
+        // Carregar dados ao abrir a página
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderStats();
+            fetchAndRenderLogs();
+        });
     </script>
 </body>
 </html>

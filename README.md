@@ -1,99 +1,178 @@
-# Sistema de Gerenciamento de Membros
+# 💒 Sistema de Gerenciamento de Membros da Igreja
 
-Sistema web para gerenciamento de membros da igreja, com recursos de controle de presença e notificações via WhatsApp.
+Sistema web robusto para administração de membros, controle de presença, notificações automáticas via WhatsApp e geração de relatórios, com foco em segurança, automação e facilidade de uso.
 
-## Funcionalidades
+---
 
-- ✅ Autenticação de usuários (admin/comum)
-- ✅ Gerenciamento de membros (CRUD)
-- ✅ Controle de presenças
-- ✅ Registro de ausências e justificativas
-- ✅ Notificações via WhatsApp
-- ✅ Dashboard com estatísticas
-- ✅ Exportação de dados
-- ✅ Painel administrativo
+## 📚 Sumário
 
-## Requisitos
+- [Visão Geral](#visão-geral)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Instalação e Configuração](#instalação-e-configuração)
+- [Integração WhatsApp](#integração-whatsapp)
+- [Agendamento de Notificações](#agendamento-de-notificações)
+- [Segurança](#segurança)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Exemplos de Uso](#exemplos-de-uso)
+- [Boas Práticas](#boas-práticas)
+- [Contato e Suporte](#contato-e-suporte)
+- [Licença](#licença)
+
+---
+
+## ✨ Visão Geral
+
+Este sistema foi desenvolvido para facilitar o gerenciamento de membros de igrejas, permitindo:
+- Cadastro, atualização e exclusão de membros
+- Controle de presenças e ausências
+- Justificativas de faltas
+- Notificações automáticas via WhatsApp
+- Painel administrativo com estatísticas e exportação de dados
+
+---
+
+## 🚀 Funcionalidades
+
+- Autenticação segura (admin e usuário comum)
+- CRUD de membros
+- Controle de presença e ausências
+- Justificativas de faltas
+- Notificações automáticas via WhatsApp
+- Dashboard com gráficos e estatísticas
+- Exportação de dados (CSV/Excel)
+- Painel administrativo
+- Logs de notificações e auditoria
+
+---
+
+## 🛠️ Tecnologias
 
 - Node.js 18+
 - MongoDB 6+
-- WhatsApp ativo no celular (para notificações)
+- Express.js
+- JWT (JSON Web Token)
+- bcrypt
+- Socket.io (para QR Code do WhatsApp)
+- Integração com WhatsApp (biblioteca específica)
+- HTML, CSS, JavaScript (Frontend)
 
-## Configuração
+---
 
-1. Clone o repositório:
-```bash
-git clone [url-do-repositorio]
-cd [nome-da-pasta]
-```
+## ⚙️ Instalação e Configuração
 
-2. Instale as dependências:
-```bash
-npm install
-```
+1. **Clone o repositório:**
+   ```bash
+   git clone [url-do-repositorio]
+   cd [nome-da-pasta]
+   ```
 
-3. Configure as variáveis de ambiente:
-Crie um arquivo `.env` na raiz do projeto com:
-```env
-MONGO_URI=sua-uri-do-mongodb
-JWT_SECRET=seu-segredo-jwt
-PORT=3000
-```
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-4. Inicialize o banco de dados:
-```bash
-npm run init-db
-```
-- Isso criará um usuário admin padrão:
-  - Email: admin@church.com
-  - Senha: admin123
+3. **Configure as variáveis de ambiente:**
+   Crie um arquivo `.env` na raiz do projeto:
+   ```env
+   MONGO_URI=sua-uri-do-mongodb
+   JWT_SECRET=seu-segredo-jwt
+   PORT=3000
+   ```
 
-⚠️ Importante: Troque a senha do admin após o primeiro login!
+4. **Inicialize o banco de dados e crie o admin padrão:**
+   ```bash
+   npm run init-db
+   ```
+   - Admin padrão:
+     - Email: `admin@church.com`
+     - Senha: `admin123`
+   > **Troque a senha do admin após o primeiro login!**
 
-## Executando o Projeto
+5. **Execute o sistema:**
+   - Ambiente de desenvolvimento:
+     ```bash
+     npm run dev
+     ```
+   - Ambiente de produção:
+     ```bash
+     npm start
+     ```
 
-Desenvolvimento:
-```bash
-npm run dev
-```
+---
 
-Produção:
-```bash
-npm start
-```
+## 📱 Integração WhatsApp
 
-## Estrutura do Projeto
+- Ao iniciar o servidor, um QR Code será exibido no terminal.
+- Escaneie com o WhatsApp do número responsável pelo envio das notificações.
+- Aguarde a confirmação de conexão.
+- O sistema mantém a sessão ativa para envio automático de mensagens.
 
-```
-├── models/          # Modelos do MongoDB
-├── public/          # Arquivos estáticos
-│   ├── js/         # Scripts do frontend
-│   ├── styles/     # Arquivos CSS
-│   └── pages/      # Páginas HTML
-├── routes/         # Rotas da API
-└── utils/          # Utilitários
-```
+---
 
-## Integração WhatsApp
+## ⏰ Agendamento de Notificações
 
-Ao iniciar o servidor pela primeira vez:
-1. Um QR Code será exibido no terminal
-2. Escaneie com o WhatsApp do número que enviará as notificações
-3. Aguarde a mensagem de confirmação
+- Notificações automáticas enviadas aos domingos às 20h.
+- Membros ausentes por 2 ou mais semanas consecutivas são notificados.
+- Todas as tentativas de notificação são registradas para auditoria.
 
-## Agendamento de Notificações
+---
 
-- As notificações são enviadas automaticamente aos domingos às 20h
-- São notificados membros ausentes por 2+ semanas consecutivas
-- O sistema registra todas as tentativas de notificação
-
-## Segurança
+## 🔒 Segurança
 
 - Autenticação via JWT
 - Senhas criptografadas com bcrypt
 - Proteção contra CSRF e XSS
 - Validação de dados em todas as rotas
+- Logs de acesso e operações sensíveis
 
-## Contato
+---
 
-Para suporte ou dúvidas, entre em contato através do email: [seu-email]
+## 📁 Estrutura do Projeto
+
+```
+├── models/          # Modelos do MongoDB
+├── public/          # Arquivos estáticos (JS, CSS, HTML)
+│   ├── js/
+│   ├── styles/
+│   └── pages/
+├── routes/          # Rotas da API
+├── utils/           # Funções utilitárias
+├── logs/            # Logs do sistema
+└── README.md
+```
+
+---
+
+## 📝 Exemplos de Uso
+
+- **Cadastrar membro:**  
+  Acesse o painel administrativo e clique em "Novo Membro".
+- **Registrar presença:**  
+  Selecione o membro e marque a presença na data desejada.
+- **Enviar justificativa:**  
+  Informe o motivo da ausência pelo painel ou via WhatsApp.
+- **Exportar dados:**  
+  Utilize o botão "Exportar" no dashboard para gerar relatórios.
+
+---
+
+## 💡 Boas Práticas
+
+- Troque a senha do admin após o primeiro acesso.
+- Mantenha o WhatsApp conectado para garantir o envio das notificações.
+- Faça backup regular do banco de dados.
+- Atualize as dependências do projeto periodicamente.
+
+---
+
+## 📬 Contato e Suporte
+
+Dúvidas, sugestões ou suporte técnico:  
+**Email:** [seu-email]
+
+---
+
+## 🏷️ Licença
+
+Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e contribuir!

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npm run cleanup && node server.js",
     "dev": "npm run cleanup && nodemon server.js",
-    "cleanup": "node cleanup.js"
+    "cleanup": "node cleanup.js",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

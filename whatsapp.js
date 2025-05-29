@@ -3,11 +3,26 @@ const router = express.Router();
 const { create } = require('venom-bot');
 const { auth } = require('./utils/auth');
 const Log = require('./models/Log');
+const puppeteer = require('puppeteer');
 
 let client = null;
 let qrCode = null;
 let connectionRetries = 0;
 const MAX_RETRIES = 3;
+let chromiumExecutablePath = null;
+
+(async () => {
+    try {
+        const browserFetcher = puppeteer.createBrowserFetcher();
+        const localRevisions = await browserFetcher.localRevisions();
+        if (localRevisions.length > 0) {
+            const revisionInfo = await browserFetcher.revisionInfo(localRevisions[0]);
+            chromiumExecutablePath = revisionInfo.executablePath;
+        }
+    } catch (e) {
+        console.warn('Não foi possível detectar o caminho do Chromium:', e);
+    }
+})();
 
 async function logWhatsAppEvent(action, level = 'info', description = '', error = null) {
     try {
@@ -31,7 +46,8 @@ async function initializeWhatsApp(ioInstance) {
     try {
         if (connectionRetries >= MAX_RETRIES) return;
 
-        const client = await create({
+        // Adicione executablePath se disponível
+        const venomOptions = {
             session: 'church-system',
             headless: 'new',
             useChrome: true,
@@ -50,7 +66,12 @@ async function initializeWhatsApp(ioInstance) {
                 '--disable-extensions',
                 '--disable-popup-blocking'
             ]
-        });
+        };
+        if (chromiumExecutablePath) {
+            venomOptions.executablePath = chromiumExecutablePath;
+        }
+
+        const client = await create(venomOptions);
 
         // Reset retries on successful connection
         connectionRetries = 0;
