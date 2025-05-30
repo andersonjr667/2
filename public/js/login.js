@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const errorToast = document.getElementById('errorToast');
+    const serverError = document.getElementById('serverError');
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
@@ -13,10 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        serverError.classList.remove('show');
+        serverError.textContent = '';
+        errorToast.classList.remove('show');
+        errorToast.textContent = '';
         try {
             const formData = new FormData(loginForm);
             const loginData = {
-                login: formData.get('login'),
+                login: formData.get('username'), // Corrige para enviar 'login' (username ou email)
                 password: formData.get('password')
             };
 
@@ -28,12 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(loginData)
             });
 
-            const data = await response.json();
-
-            if (!response.ok || !data.success || !data.token) {
-                showError(data.message || 'Usuário ou senha inválidos');
+            if (!response.ok) {
+                if (response.status >= 500) {
+                    serverError.textContent = 'Erro no servidor. Tente novamente mais tarde.';
+                    serverError.classList.add('show');
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    showError(data.message || 'Usuário ou senha inválidos');
+                }
                 return;
             }
+
+            const data = await response.json();
 
             // Salva token e dados do usuário no localStorage
             localStorage.setItem('token', data.token);
@@ -42,16 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Redireciona para o dashboard
             window.location.href = '/pages/dashboard.html';
         } catch (error) {
-            console.error('Login error:', error);
-            showError('Erro ao conectar ao servidor');
+            serverError.textContent = 'Erro no servidor. Tente novamente mais tarde.';
+            serverError.classList.add('show');
         }
     });
 
     function showError(message) {
         errorToast.textContent = message;
-        errorToast.style.display = 'block';
-        setTimeout(() => {
-            errorToast.style.display = 'none';
-        }, 3000);
+        errorToast.classList.add('show');
     }
 });

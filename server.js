@@ -4,10 +4,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const helmet = require('helmet');
 const http = require('http');
 const socketIo = require('socket.io');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 // Update the WhatsApp import
 const whatsapp = require('./whatsapp');
@@ -16,6 +15,15 @@ const { scheduleNotifications } = require('./utils/notifications');
 const Log = require('./models/Log');
 const User = require('./models/User');
 const { auth, adminOnly, requireRole } = require('./utils/auth');
+const { saveLog } = require('./utils/logger');
+
+let helmet;
+try {
+    helmet = require('helmet');
+} catch (e) {
+    console.warn('Helmet not found, continuing without security middleware');
+    helmet = null;
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -55,6 +63,33 @@ function showBanner() {
     `);
 }
 
+function printBanner() {
+    console.clear();
+    console.log('\x1b[35m');
+    console.log('╔══════════════════════════════════════════════════════════════╗');
+    console.log('║        Sistema de Gestão dos Visitantes da Igreja           ║');
+    console.log('║                    Boa Parte  v1.7.1                       ║');
+    console.log('╚══════════════════════════════════════════════════════════════╝');
+    console.log('\x1b[0m');
+}
+
+function printStatus({ mongo, mode, urls, browser, venom, warnings }) {
+    console.log('');
+    if (mongo) console.log(`\x1b[36m✓ MongoDB: ${mongo}\x1b[0m`);
+    if (mode) console.log(`\x1b[36m✓ Modo: ${mode}\x1b[0m`);
+    if (urls && urls.length) {
+        console.log('\x1b[36m✓ Endereços:');
+        urls.forEach(u => console.log(`  └─ ${u}`));
+        console.log('\x1b[0m');
+    }
+    if (browser) console.log(`\x1b[36m✓ Navegador: ${browser}\x1b[0m`);
+    if (venom) console.log(`\x1b[36m✓ WhatsApp: ${venom}\x1b[0m`);
+    if (warnings && warnings.length) {
+        warnings.forEach(w => console.log(`\x1b[33m⚠️  ${w}\x1b[0m`));
+    }
+    console.log('');
+}
+
 // Função para mostrar status do servidor
 function logServerStatus() {
     console.log(`${colors.green}✓ Servidor rodando:${colors.reset}`);
@@ -64,25 +99,42 @@ function logServerStatus() {
 }
 
 // Security middleware
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "blob:"],
-            connectSrc: ["'self'"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            frameSrc: ["'self'"],
+if (helmet) {
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+                styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+                fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
+                imgSrc: ["'self'", "data:", "blob:"],
+                connectSrc: ["'self'"],
+                objectSrc: ["'none'"],
+                mediaSrc: ["'self'"],
+                frameSrc: ["'self'"],
+            },
         },
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+        crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: { policy: "cross-origin" }
+    }));
+}
+
+// Configuração para ambiente de produção
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            res.redirect(`https://${req.header('host')}${req.url}`);
+        } else {
+            next();
+        }
+    });
+}
+
+// Configuração CORS para produção
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : true
+    origin: process.env.FRONTEND_URL || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
 }));
 
 // Basic middleware
@@ -90,10 +142,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
 
-// Servir arquivos estáticos da pasta db para acesso via frontend
-app.use('/db', express.static(path.join(__dirname, 'db')));
+// Configuração para servir arquivos estáticos
+app.use(express.static('public'));
+app.use('/db', express.static('db')); // Permite acesso aos arquivos JSON
 
 // Request logging middleware
 app.use(async (req, res, next) => {
@@ -112,12 +164,68 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// Socket.IO setup
+// WhatsApp configuration
+let whatsappClient = null;
+
 io.on('connection', (socket) => {
-    console.log(`${colors.dim}🔌 Cliente conectado: ${socket.id}${colors.reset}`);
+    console.log('Cliente conectado:', socket.id);
+
+    // Inicializa WhatsApp
+    async function initWhatsApp() {
+        try {
+            whatsappClient = await venom.create({
+                session: 'BoaParte-System', // Alterado para o novo nome
+                multidevice: true,
+                headless: true,
+                useChrome: false,
+                debug: false,
+                logQR: false
+            },
+            (base64Qr) => {
+                if (base64Qr) {
+                    socket.emit('qr', base64Qr);
+                }
+            },
+            (statusFind) => {
+                console.log('Status:', statusFind);
+                if (statusFind === 'isLogged') {
+                    socket.emit('ready');
+                }
+            });
+
+            whatsappClient.onStateChange((state) => {
+                if (state === 'CONNECTED') {
+                    socket.emit('ready');
+                }
+                if (state === 'DISCONNECTED') {
+                    socket.emit('disconnected');
+                    whatsappClient = null;
+                }
+            });
+
+        } catch (error) {
+            console.error('Erro ao inicializar WhatsApp:', error);
+            socket.emit('error', error.message);
+        }
+    }
+
+    // Eventos do socket
+    socket.on('requestQR', async () => {
+        if (!whatsappClient) {
+            await initWhatsApp();
+        }
+    });
+
+    socket.on('logout', async () => {
+        if (whatsappClient) {
+            await whatsappClient.close();
+            whatsappClient = null;
+        }
+        socket.emit('disconnected');
+    });
 
     socket.on('disconnect', () => {
-        console.log(`${colors.dim}🔌 Cliente desconectado: ${socket.id}${colors.reset}`);
+        console.log('Cliente desconectado:', socket.id);
     });
 });
 
@@ -241,5 +349,99 @@ process.on('unhandledRejection', async (err) => {
     await Log.logError(err, { level: 'critical', source: 'system' });
 });
 
+// Rotas para membros
+app.post('/api/members', async (req, res) => {
+    try {
+        const membersPath = path.join(__dirname, 'db', 'members.json');
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const newMember = {
+            _id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString()
+        };
+        members.push(newMember);
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(newMember);
+    } catch (error) {
+        console.error('Erro ao adicionar membro:', error);
+        res.status(500).json({ message: 'Erro ao adicionar membro' });
+    }
+});
+
+app.put('/api/members/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const membersPath = path.join(__dirname, 'db', 'members.json');
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberIndex = members.findIndex(m => m._id === id);
+        if (memberIndex === -1) {
+            return res.status(404).json({ message: 'Membro não encontrado' });
+        }
+        members[memberIndex] = {
+            ...members[memberIndex],
+            ...req.body,
+            _id: id,
+            updatedAt: new Date().toISOString()
+        };
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(members[memberIndex]);
+    } catch (error) {
+        console.error('Erro ao atualizar membro:', error);
+        res.status(500).json({ message: 'Erro ao atualizar membro' });
+    }
+});
+
+app.delete('/api/members/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const membersPath = path.join(__dirname, 'db', 'members.json');
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberToDelete = members.find(m => m._id === id);
+        members = members.filter(m => m._id !== id);
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(memberToDelete || { message: 'Membro excluído com sucesso' });
+    } catch (error) {
+        console.error('Erro ao excluir membro:', error);
+        res.status(500).json({ message: 'Erro ao excluir membro' });
+    }
+});
+
+app.put('/api/members/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const membersPath = path.join(__dirname, 'db', 'members.json');
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberIndex = members.findIndex(m => m._id === id);
+        if (memberIndex === -1) {
+            return res.status(404).json({ message: 'Membro não encontrado' });
+        }
+        members[memberIndex].status = status;
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(members[memberIndex]);
+    } catch (error) {
+        console.error('Erro ao atualizar status:', error);
+        res.status(500).json({ message: 'Erro ao atualizar status' });
+    }
+});
+
 // Start the server
 startServer();
+
+printBanner();
+printStatus({
+    mongo: 'Conectado',
+    mode: process.env.NODE_ENV,
+    urls: [
+        `Local:   http://localhost:${process.env.PORT || 3000}`,
+        ...Object.values(require('os').networkInterfaces())
+            .flat()
+            .filter(i => i.family === 'IPv4' && !i.internal)
+            .map(i => `Rede:    http://${i.address}:${process.env.PORT || 3000}`)
+    ],
+    browser: 'Chrome',
+    venom: 'Aguardando QRCode',
+    warnings: [
+        'O uso de "headless: true" está depreciado. Use "headless: \'new\'" ou "headless: false".'
+    ]
+});

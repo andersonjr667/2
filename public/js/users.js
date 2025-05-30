@@ -70,4 +70,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+async function changeRole(userId, currentRole) {
+    if (!confirm(`Deseja alterar o papel do usuário de ${currentRole} para ${currentRole === 'admin' ? 'user' : 'admin'}?`)) {
+        return;
+    }
+
+    try {
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
+        const response = await fetch(`/api/users/${userId}/role`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ role: newRole })
+        });
+
+        if (!response.ok) throw new Error('Falha ao alterar papel');
+        
+        // Recarrega os usuários
+        await fetchAndRenderUsers();
+        alert('Papel alterado com sucesso!');
+        await window.logAction('change_role', 
+            `Papel do usuário ${userId} alterado de ${currentRole} para ${newRole}`);
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao alterar papel do usuário');
+        await window.logAction('error', `Erro ao alterar papel: ${error.message}`, 'error');
+    }
+}
+
+async function deleteUser(userId) {
+    try {
+        const response = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Falha ao excluir usuário');
+        
+        // Recarrega os usuários
+        await fetchAndRenderUsers();
+        alert('Usuário excluído com sucesso!');
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir usuário');
+    }
+}
+
+function confirmDelete(userId, username) {
+    if (confirm(`Tem certeza que deseja excluir o usuário "${username}"?`)) {
+        deleteUser(userId);
+    }
+}
+
 // Nenhum código interferindo na renderização dos botões dos usuários

@@ -106,7 +106,50 @@
     background: #f1f7ff;
 }
 
-/* Nenhuma regra que esconda botões ou .icon-btn */
+/* Estilos para botões de ação na tabela */
+.actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: #f3e6eb;
+}
+
+.btn-role .material-icons {
+    font-size: 20px;
+    color: #9e2d4a;
+}
+
+.btn-delete .material-icons {
+    font-size: 20px;
+    color: #c0392b;
+}
+
+/* Ajuste responsivo para a coluna de ações */
+@media (max-width: 600px) {
+    .actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .icon-btn {
+        padding: 4px;
+    }
+}
 
 @media (max-width: 600px) {
     .users-container {

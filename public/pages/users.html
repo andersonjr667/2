@@ -108,8 +108,6 @@
             </tbody>
         </table>
     </div>
-    <!-- Exemplo de estrutura de lista de usuários -->
-    <div id="users-list"></div>
 </main>
 <script>
     // Exibe nome do usuário logado e links de admin se for admin
@@ -159,9 +157,17 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${user.username}</td>
-                <td>${user.role ? user.role : '-'}</td>
+                <td>${user.role || '-'}</td>
                 <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
                 <td>${user._id || '-'}</td>
+                <td class="actions admin-only">
+                    <button class="icon-btn btn-role" title="Alterar papel" onclick="changeRole('${user._id}', '${user.role}')">
+                        <i class="material-icons">swap_horiz</i>
+                    </button>
+                    <button class="icon-btn btn-delete" title="Excluir usuário" onclick="confirmDelete('${user._id}', '${user.username}')">
+                        <i class="material-icons">delete</i>
+                    </button>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
@@ -198,11 +204,54 @@
       });
     }
     // Funções de ação (implemente conforme necessário)
-    function changeRole(userId) {
-      alert('Alterar papel do usuário: ' + userId);
+    async function changeRole(userId, currentRole) {
+        try {
+            const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            const response = await fetch(`/api/users/${userId}/role`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ role: newRole })
+            });
+
+            if (!response.ok) throw new Error('Falha ao alterar papel');
+            
+            // Atualiza a tabela
+            fetchAndRenderUsers();
+            
+            // Mostra feedback
+            alert(`Papel do usuário alterado com sucesso para ${newRole}`);
+        } catch (error) {
+            console.error('Erro ao alterar papel:', error);
+            alert('Erro ao alterar papel do usuário');
+        }
     }
-    function deleteUser(userId) {
-      alert('Excluir usuário: ' + userId);
+
+    // Função para confirmar e excluir usuário
+    function confirmDelete(userId, username) {
+        if (confirm(`Tem certeza que deseja excluir o usuário ${username}?`)) {
+            deleteUser(userId);
+        }
+    }
+
+    async function deleteUser(userId) {
+        try {
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Falha ao excluir usuário');
+            
+            // Atualiza a tabela
+            fetchAndRenderUsers();
+            
+            // Mostra feedback
+            alert('Usuário excluído com sucesso');
+        } catch (error) {
+            console.error('Erro ao excluir usuário:', error);
+            alert('Erro ao excluir usuário');
+        }
     }
     document.addEventListener('DOMContentLoaded', function() {
         checkAuthAndSidebar();

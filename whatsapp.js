@@ -1,29 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const { create } = require('venom-bot');
+const venom = require('venom-bot');
 const { auth } = require('./utils/auth');
 const Log = require('./models/Log');
-const puppeteer = require('puppeteer');
 
 let client = null;
-let qrCode = null;
+let qrCallback = null;
 let connectionRetries = 0;
 const MAX_RETRIES = 3;
-let chromiumExecutablePath = null;
 
-(async () => {
+// Initialize WhatsApp client
+async function initializeWhatsApp(socket) {
     try {
-        const browserFetcher = puppeteer.createBrowserFetcher();
-        const localRevisions = await browserFetcher.localRevisions();
-        if (localRevisions.length > 0) {
-            const revisionInfo = await browserFetcher.revisionInfo(localRevisions[0]);
-            chromiumExecutablePath = revisionInfo.executablePath;
-        }
-    } catch (e) {
-        console.warn('Não foi possível detectar o caminho do Chromium:', e);
-    }
-})();
+        qrCallback = socket;
+        
+        if (!client) {
+            client = await venom.create({
+                session: 'boa-parte-session',
+                multidevice: true,
+                headless: true,
+                useChrome: false,
+                debug: false,
+                logQR: false,
+                disableWelcome: true,
+                createPathFileToken: true,
+                waitForLogin: true
+            },
+            (base64Qr) => {
+                if (socket && base64Qr) {
+                    socket.emit('qr', base64Qr);
+                }
+            },
+            (statusFind) => {
+                console.log('Status:', statusFind);
+                if (statusFind === 'isLogged') {
+                    socket.emit('ready');
+                }
+            },
+            {
+                folderNameToken: 'tokens',
+                headless: 'new'
+            });
 
+            client.onStateChange((state) => {
+                console.log('State changed:', state);
+                if (state === 'CONNECTED') {
+                    socket.emit('ready');
+                }
+                if (state === 'DISCONNECTED') {
+                    socket.emit('disconnected');
+                    client = null;
+                }
+            });
+        }
+
+        return client;
+    } catch (error) {
+        console.error('Error initializing WhatsApp:', error);
+        socket.emit('error', error.message);
+        throw error;
+    }
+}
+
+// Log WhatsApp event
 async function logWhatsAppEvent(action, level = 'info', description = '', error = null) {
     try {
         await Log.create({
@@ -40,59 +79,6 @@ async function logWhatsAppEvent(action, level = 'info', description = '', error 
         console.error('Failed to log WhatsApp event:', err);
     }
 }
-
-// Initialize WhatsApp client
-async function initializeWhatsApp(ioInstance) {
-    try {
-        if (connectionRetries >= MAX_RETRIES) return;
-
-        // Adicione executablePath se disponível
-        const venomOptions = {
-            session: 'church-system',
-            headless: 'new',
-            useChrome: true,
-            debug: false,
-            logQR: true,
-            disableWelcome: true,
-            browserArgs: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--no-first-run',
-                '--no-default-browser-check',
-                '--disable-notifications',
-                '--disable-extensions',
-                '--disable-popup-blocking'
-            ]
-        };
-        if (chromiumExecutablePath) {
-            venomOptions.executablePath = chromiumExecutablePath;
-        }
-
-        const client = await create(venomOptions);
-
-        // Reset retries on successful connection
-        connectionRetries = 0;
-        
-        // Log successful connection
-        await logWhatsAppEvent('client_initialized', 'info', 'WhatsApp client initialized successfully');
-        
-        return client;
-    } catch (error) {
-        await logWhatsAppEvent('initialization_error', 'error', 'Failed to initialize WhatsApp client', error);
-        connectionRetries++;
-        
-        // Add delay before retry
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        
-        return initializeWhatsApp(ioInstance);
-    }
-}
-
-// Start initialization
-initializeWhatsApp();
 
 // Improved message sending with retry mechanism
 async function sendMessageWithRetry(number, message, retries = 3) {

@@ -3,6 +3,10 @@ const router = express.Router();
 const User = require('../models/User');
 const Log = require('../models/Log');
 const { auth, adminOnly } = require('../utils/auth');
+const fs = require('fs/promises');
+const path = require('path');
+
+const usersFilePath = path.join(__dirname, '../db/users.json');
 
 // Get all users (apenas autenticado)
 router.get('/', auth, async (req, res) => {
@@ -170,6 +174,56 @@ router.post('/change-password', auth, async (req, res) => {
         res.json({ message: 'Senha alterada com sucesso' });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao alterar senha' });
+    }
+});
+
+// Alterar papel do usuário
+router.put('/:id/role', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        
+        // Lê o arquivo atual
+        const data = await fs.readFile(usersFilePath, 'utf8');
+        const users = JSON.parse(data);
+        
+        // Encontra e atualiza o usuário
+        const userIndex = users.findIndex(u => u._id === id);
+        if (userIndex === -1) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+        
+        users[userIndex].role = role;
+        
+        // Salva as alterações
+        await fs.writeFile(usersFilePath, JSON.stringify(users, null, 2));
+        
+        res.json({ message: 'Papel atualizado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao atualizar papel:', error);
+        res.status(500).json({ message: 'Erro ao atualizar papel' });
+    }
+});
+
+// Excluir usuário
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Lê o arquivo atual
+        const data = await fs.readFile(usersFilePath, 'utf8');
+        const users = JSON.parse(data);
+        
+        // Filtra o usuário a ser removido
+        const newUsers = users.filter(u => u._id !== id);
+        
+        // Salva as alterações
+        await fs.writeFile(usersFilePath, JSON.stringify(newUsers, null, 2));
+        
+        res.json({ message: 'Usuário excluído com sucesso' });
+    } catch (error) {
+        console.error('Erro ao excluir usuário:', error);
+        res.status(500).json({ message: 'Erro ao excluir usuário' });
     }
 });
 

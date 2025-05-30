@@ -418,16 +418,5 @@
     "receivedMessage": false,
     "createdAt": "2025-05-10T13:44:35.551Z",
     "__v": 0
-  },
-  {
-    "_id": "1748545320590",
-    "name": "Teste 01",
-    "phone": "31971533882",
-    "owner": "Anderson",
-    "username": "Anderson",
-    "birthday": null,
-    "receivedMessage": false,
-    "createdAt": "2025-05-29T19:02:00.590Z",
-    "__v": 0
   }
 ]

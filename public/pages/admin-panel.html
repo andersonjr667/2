@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../styles/dashboard.css">
     <link rel="icon" href="../images/image.png">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Adicione a nova importação do Chart.js com versão específica -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
     <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
@@ -54,6 +56,26 @@
                         <h3>Faltantes</h3>
                         <p id="totalAbsent">--</p>
                     </div>
+                    <div class="stat-card">
+                        <h3>Visitantes</h3>
+                        <p id="totalVisitors">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Ativos</h3>
+                        <p id="activeMembers">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Inativos</h3>
+                        <p id="inactiveMembers">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Mensagens Enviadas</h3>
+                        <p id="messagesSent">--</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Presenças Hoje</h3>
+                        <p id="todayPresent">--</p>
+                    </div>
                 </div>
             </div>
             <div class="card">
@@ -75,7 +97,6 @@
         </section>
     </main>
     <div class="toast-container" id="toastContainer"></div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function checkAdminSidebar() {
             let user = null;
@@ -144,49 +165,87 @@
             try {
                 // Busca contatos, usuários e faltantes dos arquivos locais
                 const [contactsRes, usersRes, absentsRes, membersRes] = await Promise.all([
-                    fetch('/db/contacts.json'),
-                    fetch('/db/users.json'),
-                    fetch('/db/absentmembers.json'),
-                    fetch('/db/members.json')
+                    fetch('../db/contacts.json'),
+                    fetch('../db/users.json'), 
+                    fetch('../db/absentmembers.json'),
+                    fetch('../db/members.json')
                 ]);
+
+                // Verifica se todas as respostas estão ok
+                if (!contactsRes.ok) throw new Error('Falha ao carregar contatos');
+                if (!usersRes.ok) throw new Error('Falha ao carregar usuários');
+                if (!absentsRes.ok) throw new Error('Falha ao carregar ausentes');
+                if (!membersRes.ok) throw new Error('Falha ao carregar membros');
+
                 const [contacts, users, absents, members] = await Promise.all([
-                    contactsRes.ok ? contactsRes.json() : [],
-                    usersRes.ok ? usersRes.json() : [],
-                    absentsRes.ok ? absentsRes.json() : [],
-                    membersRes.ok ? membersRes.json() : []
+                    contactsRes.json(),
+                    usersRes.json(),
+                    absentsRes.json(),
+                    membersRes.json()
                 ]);
-                // Corrige contagem de membros (members.json)
-                let totalMembers = Array.isArray(members) ? members.filter(m => m && (m.name || m._id)).length : '--';
-                document.getElementById('totalMembers').textContent = totalMembers;
-                // Corrige contagem de usuários (users.json)
-                let totalUsers = Array.isArray(users) ? users.filter(u => u && (u.username || u._id)).length : '--';
-                document.getElementById('totalUsers').textContent = totalUsers;
-                // Corrige contagem de faltantes (absentmembers.json)
-                let totalAbsent = Array.isArray(absents) ? absents.filter(a => a && (a.memberId || a._id)).length : '--';
-                document.getElementById('totalAbsent').textContent = totalAbsent;
-                // Exibe total de visitantes (contatos) no card separado se existir
-                let visitorsCard = document.getElementById('totalVisitors');
-                let totalVisitors = Array.isArray(contacts) ? contacts.filter(c => c && (c.name || c._id)).length : '--';
-                if (!visitorsCard) {
-                  // Cria o card de visitantes se não existir
-                  const statsGrid = document.querySelector('.stats-grid');
-                  const div = document.createElement('div');
-                  div.className = 'stat-card';
-                  div.innerHTML = '<h3>Visitantes</h3><p id="totalVisitors">' + totalVisitors + '</p>';
-                  statsGrid.appendChild(div);
+
+                console.log('Dados carregados:', {contacts, users, absents, members});
+
+                // Atualiza estatísticas existentes e novas
+                document.getElementById('totalMembers').textContent = 
+                    Array.isArray(members) ? members.filter(m => m && (m.name || m._id)).length : '--';
+                
+                document.getElementById('totalUsers').textContent = 
+                    Array.isArray(users) ? users.filter(u => u && (u.username || u._id)).length : '--';
+                
+                document.getElementById('totalAbsent').textContent = 
+                    Array.isArray(absents) ? absents.filter(a => a && (a.memberId || a._id)).length : '--';
+
+                document.getElementById('totalVisitors').textContent = 
+                    Array.isArray(contacts) ? contacts.filter(c => c && (c.name || c._id)).length : '--';
+
+                // Calcula estatísticas adicionais
+                document.getElementById('activeMembers').textContent = 
+                    Array.isArray(members) ? members.filter(m => m && m.status === 'ativo').length : '--';
+                
+                document.getElementById('inactiveMembers').textContent = 
+                    Array.isArray(members) ? members.filter(m => m && m.status === 'inativo').length : '--';
+
+                document.getElementById('messagesSent').textContent = 
+                    Array.isArray(contacts) ? contacts.filter(c => c && c.receivedMessage).length : '--';
+
+                // Contagem de presenças hoje
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('todayPresent').textContent = 
+                    Array.isArray(members) ? members.filter(m => m && m.lastAttendance === today).length : '--';
+
+                // Se houver contatos válidos, renderiza o gráfico
+                if (Array.isArray(contacts) && contacts.length > 0) {
+                    renderAdminChart(contacts);
                 } else {
-                  visitorsCard.textContent = totalVisitors;
+                    const chartContainer = document.querySelector('.chart-container');
+                    chartContainer.innerHTML = '<div style="color:#9e2d4a;text-align:center;padding:2em;">Sem dados suficientes para exibir o gráfico</div>';
                 }
-                renderAdminChart(contacts);
-            } catch (err) {
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+                showToast(`Erro ao carregar dados: ${error.message}`, 'error');
+                
+                // Define valores padrão em caso de erro
                 document.getElementById('totalMembers').textContent = '--';
                 document.getElementById('totalUsers').textContent = '--';
                 document.getElementById('totalAbsent').textContent = '--';
+                
+                // Mostra mensagem de erro no container do gráfico
+                const chartContainer = document.querySelector('.chart-container');
+                chartContainer.innerHTML = `<div style="color:#9e2d4a;text-align:center;padding:2em;">Erro ao carregar dados: ${error.message}</div>`;
             }
         }
 
         // Gráfico de Atividades
         function renderAdminChart(contacts) {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js não está carregado');
+                const chartContainer = document.querySelector('.chart-container');
+                chartContainer.innerHTML = '<div style="color:#9e2d4a;text-align:center;padding:2em;">Erro ao carregar o gráfico: Chart.js não está disponível. Recarregando...</div>';
+                return;
+            }
+
             const chartContainer = document.querySelector('.chart-container');
             let canvas = document.getElementById('adminChart');
             // Se o canvas foi removido por mensagens anteriores, recria
@@ -214,7 +273,8 @@
             const now = new Date();
             for (let i = 5; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                months.push(d.toLocaleString('pt-BR', { month: 'short', year: '2-digit' }));
+                // Alterado o formato para exibir apenas o nome do mês
+                months.push(d.toLocaleString('pt-BR', { month: 'long' }));
             }
             // Conta contatos por mês
             const contactsByMonth = months.map((label, idx) => {
@@ -251,7 +311,15 @@
                         legend: { display: true }
                     },
                     scales: {
-                        y: { beginAtZero: true, precision: 0 }
+                        y: { beginAtZero: true, precision: 0 },
+                        x: {
+                            ticks: {
+                                // Capitaliza primeira letra do mês
+                                callback: function(val, index) {
+                                    return months[index].charAt(0).toUpperCase() + months[index].slice(1);
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -294,6 +362,31 @@
         document.getElementById('clearLogsBtn').onclick = function() {
             document.getElementById('systemLogs').innerHTML = '<div class="log-entry">Nenhum log encontrado</div>';
         };
+
+        // Função de toast melhorada
+        function showToast(message, type = 'error') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Adicione verificação de carregamento do Chart.js
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js não carregado corretamente');
+            // Tenta carregar novamente
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+            script.onload = function() {
+                console.log('Chart.js carregado com sucesso');
+                // Recarrega as estatísticas após o carregamento
+                fetchAndRenderStats();
+            };
+            document.head.appendChild(script);
+        }
     </script>
 </body>
 </html>

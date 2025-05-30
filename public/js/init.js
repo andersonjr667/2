@@ -68,6 +68,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Add logging utility
+    window.logAction = async function(action, description, level = 'info') {
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const logEntry = {
+                action,
+                description,
+                level,
+                user: user.username || 'anonymous',
+                page: window.location.pathname,
+                userAgent: navigator.userAgent
+            };
+
+            const response = await fetch('/api/logs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logEntry)
+            });
+
+            if (!response.ok) throw new Error('Failed to save log');
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error logging action:', error);
+        }
+    };
+
+    // Add event logging for page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const pageName = window.location.pathname.split('/').pop() || 'index';
+        window.logAction('page_load', `Page ${pageName} loaded`);
+    });
+
     // Executa as verificações
     const isLoginPage = window.location.pathname.endsWith('login.html');
     if (!isLoginPage) {

@@ -7,27 +7,33 @@
     "createdAt": "2025-05-29T10:15:30.000Z",
     "updatedAt": "2025-05-29T10:15:30.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76d2e3f4a5b6c7d8e9f0a1b2",
-    "name": "Alysson",
+    "name": "Alysson Carvalho",
     "phone": "5531984353383",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:16:45.000Z",
     "updatedAt": "2025-05-29T10:16:45.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87c3d4e5f6a7b8c9d0e1f2a3",
-    "name": "Ana",
+    "name": "Ana Luiza",
     "phone": "5531987401274",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:17:20.000Z",
     "updatedAt": "2025-05-29T10:17:20.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98d4e5f6a7b8c9d0e1f2a3b4",
@@ -37,7 +43,9 @@
     "createdAt": "2025-05-29T10:18:05.000Z",
     "updatedAt": "2025-05-29T10:18:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09e5f6a7b8c9d0e1f2a3b4c5",
@@ -47,7 +55,9 @@
     "createdAt": "2025-05-29T10:19:12.000Z",
     "updatedAt": "2025-05-29T10:19:12.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21f0a1b2c3d4e5f6a789b0c1",
@@ -57,17 +67,21 @@
     "createdAt": "2025-05-29T10:20:33.000Z",
     "updatedAt": "2025-05-29T10:20:33.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "32a1b2c3d4e5f6a789b0c1d2",
-    "name": "Bianca",
+    "name": "Bianca Vargas",
     "phone": "5531975953540",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:21:47.000Z",
     "updatedAt": "2025-05-29T10:21:47.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "43b2c3d4e5f6a789b0c1d2e3",
@@ -77,7 +91,9 @@
     "createdAt": "2025-05-29T10:22:55.000Z",
     "updatedAt": "2025-05-29T10:22:55.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "54c3d4e5f6a789b0c1d2e3f4",
@@ -87,7 +103,9 @@
     "createdAt": "2025-05-29T10:23:40.000Z",
     "updatedAt": "2025-05-29T10:23:40.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "65d4e5f6a789b0c1d2e3f4a5",
@@ -97,7 +115,9 @@
     "createdAt": "2025-05-29T10:24:18.000Z",
     "updatedAt": "2025-05-29T10:24:18.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76e5f6a789b0c1d2e3f4a5b6",
@@ -107,17 +127,21 @@
     "createdAt": "2025-05-29T10:25:29.000Z",
     "updatedAt": "2025-05-29T10:25:29.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87f6a789b0c1d2e3f4a5b6c7",
-    "name": "Ester",
+    "name": "Ester Tigre",
     "phone": "5531982670832",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:26:15.000Z",
     "updatedAt": "2025-05-29T10:26:15.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98a789b0c1d2e3f4a5b6c7d8",
@@ -127,7 +151,9 @@
     "createdAt": "2025-05-29T10:27:22.000Z",
     "updatedAt": "2025-05-29T10:27:22.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09b0c1d2e3f4a5b6c7d8e9f0",
@@ -137,7 +163,9 @@
     "createdAt": "2025-05-29T10:28:05.000Z",
     "updatedAt": "2025-05-29T10:28:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21c1d2e3f4a5b6c7d8e9f0a1",
@@ -147,7 +175,9 @@
     "createdAt": "2025-05-29T10:29:11.000Z",
     "updatedAt": "2025-05-29T10:29:11.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "32d2e3f4a5b6c7d8e9f0a1b2",
@@ -157,27 +187,33 @@
     "createdAt": "2025-05-29T10:30:25.000Z",
     "updatedAt": "2025-05-29T10:30:25.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "43e3f4a5b6c7d8e9f0a1b2c3",
-    "name": "Ingryd",
+    "name": "Ingryd Rocha",
     "phone": "5531988868991",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:31:40.000Z",
     "updatedAt": "2025-05-29T10:31:40.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "54f4a5b6c7d8e9f0a1b2c3d4",
-    "name": "Isaac",
+    "name": "Isaac Takahashi",
     "phone": "5531971652421",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:32:55.000Z",
     "updatedAt": "2025-05-29T10:32:55.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "65a5b6c7d8e9f0a1b2c3d4e5",
@@ -187,7 +223,9 @@
     "createdAt": "2025-05-29T10:33:30.000Z",
     "updatedAt": "2025-05-29T10:33:30.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76b6c7d8e9f0a1b2c3d4e5f6",
@@ -197,17 +235,21 @@
     "createdAt": "2025-05-29T10:34:45.000Z",
     "updatedAt": "2025-05-29T10:34:45.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87c7d8e9f0a1b2c3d4e5f6a7",
-    "name": "Juninho",
+    "name": "Anderson Jr(Juninho)",
     "phone": "5531971533882",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:35:20.000Z",
     "updatedAt": "2025-05-29T10:35:20.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98d8e9f0a1b2c3d4e5f6a7b8",
@@ -217,7 +259,9 @@
     "createdAt": "2025-05-29T10:36:05.000Z",
     "updatedAt": "2025-05-29T10:36:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09e9f0a1b2c3d4e5f6a7b8c9",
@@ -227,7 +271,9 @@
     "createdAt": "2025-05-29T10:37:12.000Z",
     "updatedAt": "2025-05-29T10:37:12.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21f0a1b2c3d4e5f6a7b8c9d0",
@@ -237,7 +283,9 @@
     "createdAt": "2025-05-29T10:38:33.000Z",
     "updatedAt": "2025-05-29T10:38:33.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "32a1b2c3d4e5f6a7b8c9d0e1",
@@ -247,7 +295,9 @@
     "createdAt": "2025-05-29T10:39:47.000Z",
     "updatedAt": "2025-05-29T10:39:47.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "43b2c3d4e5f6a7b8c9d0e1f2",
@@ -257,7 +307,9 @@
     "createdAt": "2025-05-29T10:40:55.000Z",
     "updatedAt": "2025-05-29T10:40:55.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "54c3d4e5f6a7b8c9d0e1f2a3",
@@ -267,7 +319,9 @@
     "createdAt": "2025-05-29T10:41:40.000Z",
     "updatedAt": "2025-05-29T10:41:40.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "65d4e5f6a7b8c9d0e1f2a3b4",
@@ -277,7 +331,9 @@
     "createdAt": "2025-05-29T10:42:18.000Z",
     "updatedAt": "2025-05-29T10:42:18.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76e5f6a7b8c9d0e1f2a3b4c5",
@@ -287,7 +343,9 @@
     "createdAt": "2025-05-29T10:43:29.000Z",
     "updatedAt": "2025-05-29T10:43:29.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87f6a7b8c9d0e1f2a3b4c5d6",
@@ -297,7 +355,9 @@
     "createdAt": "2025-05-29T10:44:15.000Z",
     "updatedAt": "2025-05-29T10:44:15.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98a7b8c9d0e1f2a3b4c5d6e7",
@@ -307,17 +367,21 @@
     "createdAt": "2025-05-29T10:45:22.000Z",
     "updatedAt": "2025-05-29T10:45:22.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09b8c9d0e1f2a3b4c5d6e7f8",
-    "name": "Maria",
+    "name": "Maria Fernanda",
     "phone": "5531972660695",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:46:05.000Z",
     "updatedAt": "2025-05-29T10:46:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21c9d0e1f2a3b4c5d6e7f8a9",
@@ -327,7 +391,9 @@
     "createdAt": "2025-05-29T10:47:11.000Z",
     "updatedAt": "2025-05-29T10:47:11.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "32d0e1f2a3b4c5d6e7f8a9b0",
@@ -337,7 +403,9 @@
     "createdAt": "2025-05-29T10:48:25.000Z",
     "updatedAt": "2025-05-29T10:48:25.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "43e1f2a3b4c5d6e7f8a9b0c1",
@@ -347,7 +415,9 @@
     "createdAt": "2025-05-29T10:49:40.000Z",
     "updatedAt": "2025-05-29T10:49:40.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "54f2a3b4c5d6e7f8a9b0c1d2",
@@ -357,27 +427,33 @@
     "createdAt": "2025-05-29T10:50:55.000Z",
     "updatedAt": "2025-05-29T10:50:55.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "65a3b4c5d6e7f8a9b0c1d2e3",
-    "name": "Mateus",
+    "name": "Mateus Bernades",
     "phone": "5533988882030",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:51:30.000Z",
     "updatedAt": "2025-05-29T10:51:30.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76b4c5d6e7f8a9b0c1d2e3f4",
-    "name": "Mateuzin",
+    "name": "Mateuzinn",
     "phone": "5531991299240",
     "isDisciple": false,
     "createdAt": "2025-05-29T10:52:45.000Z",
     "updatedAt": "2025-05-29T10:52:45.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87c5d6e7f8a9b0c1d2e3f4a5",
@@ -387,7 +463,9 @@
     "createdAt": "2025-05-29T10:53:20.000Z",
     "updatedAt": "2025-05-29T10:53:20.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98d6e7f8a9b0c1d2e3f4a5b6",
@@ -397,7 +475,9 @@
     "createdAt": "2025-05-29T10:54:05.000Z",
     "updatedAt": "2025-05-29T10:54:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09e7f8a9b0c1d2e3f4a5b6c7",
@@ -407,7 +487,9 @@
     "createdAt": "2025-05-29T10:55:12.000Z",
     "updatedAt": "2025-05-29T10:55:12.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21f8a9b0c1d2e3f4a5b6c7d8",
@@ -417,7 +499,9 @@
     "createdAt": "2025-05-29T10:56:33.000Z",
     "updatedAt": "2025-05-29T10:56:33.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "32a9b0c1d2e3f4a5b6c7d8e9",
@@ -427,7 +511,9 @@
     "createdAt": "2025-05-29T10:57:47.000Z",
     "updatedAt": "2025-05-29T10:57:47.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "43b0c1d2e3f4a5b6c7d8e9f0",
@@ -437,7 +523,9 @@
     "createdAt": "2025-05-29T10:58:55.000Z",
     "updatedAt": "2025-05-29T10:58:55.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "54c1d2e3f4a5b6c7d8e9f0a1",
@@ -447,7 +535,9 @@
     "createdAt": "2025-05-29T10:59:40.000Z",
     "updatedAt": "2025-05-29T10:59:40.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "65d2e3f4a5b6c7d8e9f0a1b2",
@@ -457,27 +547,33 @@
     "createdAt": "2025-05-29T11:00:18.000Z",
     "updatedAt": "2025-05-29T11:00:18.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "76e3f4a5b6c7d8e9f0a1b2c3",
-    "name": "Thayná",
+    "name": "Thayná Bernades",
     "phone": "5533999424001",
     "isDisciple": false,
     "createdAt": "2025-05-29T11:01:29.000Z",
     "updatedAt": "2025-05-29T11:01:29.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "87f4a5b6c7d8e9f0a1b2c3d4",
-    "name": "Thiago",
+    "name": "Thiago Vieira",
     "phone": "5531987245639",
     "isDisciple": false,
     "createdAt": "2025-05-29T11:02:15.000Z",
     "updatedAt": "2025-05-29T11:02:15.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "98a5b6c7d8e9f0a1b2c3d4e5",
@@ -487,17 +583,21 @@
     "createdAt": "2025-05-29T11:03:22.000Z",
     "updatedAt": "2025-05-29T11:03:22.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "09b6c7d8e9f0a1b2c3d4e5f6",
-    "name": "Val",
+    "name": "Valquiria Fernandes",
     "phone": "5531987397393",
     "isDisciple": false,
     "createdAt": "2025-05-29T11:04:05.000Z",
     "updatedAt": "2025-05-29T11:04:05.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   },
   {
     "_id": "21c7d8e9f0a1b2c3d4e5f6a7",
@@ -507,6 +607,8 @@
     "createdAt": "2025-05-29T11:05:11.000Z",
     "updatedAt": "2025-05-29T11:05:11.000Z",
     "__v": 0,
-    "discipleBy": null
+    "discipleBy": null,
+    "status": "ativo",
+    "role": "membro"
   }
 ]

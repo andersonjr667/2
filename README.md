@@ -176,3 +176,41 @@ Dúvidas, sugestões ou suporte técnico:
 ## 🏷️ Licença
 
 Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e contribuir!
+
+---
+
+# Boa Parte - Sistema de Gerenciamento
+
+## Setup do Projeto
+
+1. Instale as dependências:
+```bash
+npm install
+```
+
+2. Configure as variáveis de ambiente:
+- Copie `.env.example` para `.env`
+- Ajuste as variáveis conforme necessário
+
+3. Inicie o servidor:
+```bash
+npm start
+```
+
+## Deploy no Render
+
+1. No Render, crie um novo "Web Service"
+2. Conecte ao repositório GitHub
+3. Configure:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Environment Variables:
+     - NODE_ENV: production
+     - PORT: 3000
+     - FRONTEND_URL: URL do seu site
+
+## Notas
+
+- O banco de dados usa arquivos JSON locais
+- WhatsApp Web usa Venom-bot
+- Precisa ter Node.js >= 16.0.0

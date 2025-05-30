@@ -53,24 +53,28 @@
             </div>
         </div>
         
-        <div class="qr-container">
-            <div id="qrcode">
-                <p class="loading-text">Aguardando QR Code...</p>
-            </div>
+        <div class="qr-container" id="qrContainer">
+            <canvas id="qrCanvas"></canvas>
+            <div id="qrPlaceholder" class="loading-text">Aguardando QR Code...</div>
         </div>
 
         <div class="instructions">
             <h3>Como conectar:</h3>
             <ol>
                 <li>Abra o WhatsApp no seu celular</li>
-                <li>Toque em Menu ou Configurações e selecione WhatsApp Web</li>
-                <li>Aponte seu celular para esta tela para capturar o código QR</li>
+                <li>Toque em Menu (⋮) ou Configurações</li>
+                <li>Selecione WhatsApp Web/Desktop</li>
+                <li>Aponte a câmera para o QR Code</li>
             </ol>
         </div>
 
         <div class="actions">
-            <button id="refreshBtn" class="btn-secondary" disabled>Atualizar QR Code</button>
-            <button id="logoutBtn" class="btn-danger" disabled>Desconectar</button>
+            <button id="refreshQrBtn" class="btn-secondary" disabled>
+                <i class="fas fa-sync-alt"></i> Atualizar QR Code
+            </button>
+            <button id="logoutWhatsAppBtn" class="btn-danger" disabled>
+                <i class="fas fa-sign-out-alt"></i> Desconectar WhatsApp
+            </button>
         </div>
     </div>
 </main>
