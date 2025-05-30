@@ -199,18 +199,25 @@ npm start
 
 ## Deploy no Render
 
-1. No Render, crie um novo "Web Service"
-2. Conecte ao repositório GitHub
+Para fazer deploy no Render.com:
+
+1. Faça push do seu repositório para o GitHub.
+2. No Render, crie um novo "Web Service" e conecte ao seu repositório.
 3. Configure:
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-   - Environment Variables:
-     - NODE_ENV: production
-     - PORT: 3000
-     - FRONTEND_URL: URL do seu site
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+   - **Environment Variables:**
+     - `NODE_ENV=production`
+     - `PORT=3000`
+     - `MONGO_URI=...` (sua string do MongoDB Atlas)
+     - `JWT_SECRET=...` (sua chave secreta)
+     - `SESSION_SECRET=...` (outra chave secreta)
+     - `FRONTEND_URL=https://seusite.onrender.com` (ajuste para a URL do seu serviço)
+     - Outras variáveis conforme `.env.example`
 
-## Notas
+4. Após o deploy, acesse a URL fornecida pelo Render.
+5. Se necessário, rode `npm audit fix --force` localmente para corrigir vulnerabilidades e faça novo push.
 
-- O banco de dados usa arquivos JSON locais
-- WhatsApp Web usa Venom-bot
-- Precisa ter Node.js >= 16.0.0
+> **Dica:**
+> - O arquivo `.env.example` lista todas as variáveis obrigatórias.
+> - O diretório `tokens/` está no `.gitignore` e não será enviado ao Render (a sessão do WhatsApp será criada do zero no deploy).
