@@ -205,143 +205,92 @@ button:hover, .btn:hover {
     box-shadow: 0 2px 8px rgba(30,41,59,0.10);
 }
 
-/* Sidebar (importado e adaptado do dashboard.css) */
+/* SIDEBAR E MENU HAMBÚRGUER - PADRÃO users.html */
 .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 250px;
-    height: 100vh;
-    background: var(--nav-background);
-    padding-top: 120px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 900;
-    transition: transform 0.3s ease;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background: #21000f;
+  padding-top: 120px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.15);
+  z-index: 900;
+  transition: transform 0.3s;
 }
 .logo-container {
-    text-align: center;
-    padding: 10px;
-    background-color: var(--nav-background);
-    border-bottom: 1px solid var(--primary-color);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    z-index: 1000;
+  text-align: center;
+  padding: 10px;
+  background: #21000f;
+  border-bottom: 1px solid #450b1e;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
 }
 .logo {
-    max-width: 100px;
-    height: auto;
-    border-radius: 8px;
-    padding: 5px;
-    background: white;
+  max-width: 80px;
+  height: auto;
+  border-radius: 8px;
+  background: #fff;
+  padding: 5px;
 }
-.sidebar-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--primary-color);
-}
-.sidebar-header h2 {
-    color: var(--button-primary-text);
-    font-size: 1.2rem;
-}
-.nav-menu {
-    list-style: none;
-    padding: 15px 0;
-}
-.nav-menu li a {
-    color: var(--secondary-color);
-    text-decoration: none;
-    padding: 12px 20px;
-    display: block;
-    transition: all 0.3s ease;
-    font-size: 0.95rem;
-    border-radius: 6px;
-}
-.nav-menu li a:hover,
-.nav-menu li a.active {
-    background: var(--primary-color);
-    color: var(--button-primary-text);
-    padding-left: 25px;
-}
-.sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid var(--primary-color);
-}
-#logoutBtn {
-    width: 100%;
-    padding: 10px;
-    background: var(--primary-color);
-    color: var(--button-primary-text);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-#logoutBtn:hover {
-    background: var(--color4);
-}
-
-/* Responsividade sidebar */
 .sidebar-toggle {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-    background: var(--primary-color);
-    border: none;
-    color: var(--button-primary-text);
-    padding: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-@media (max-width: 768px) {
-    .sidebar-toggle {
-        display: block;
-    }
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    .logo-container {
-        height: 80px;
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        background: var(--nav-background);
-    }
-    .logo {
-        max-width: 60px;
-    }
+  display: none;
 }
 .menu-overlay {
+  display: none;
+}
+@media (max-width: 900px) {
+  .sidebar {
+    width: 220px;
+    left: -220px;
+    transition: left 0.3s;
+  }
+  .sidebar.active {
+    left: 0;
+    z-index: 1002;
+  }
+  .menu-overlay {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 899;
-}
-.menu-overlay.active {
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.25);
+    z-index: 1001;
+  }
+  .menu-overlay.active {
     display: block;
-}
-
-/* Cores para gráficos (usadas via JS) */
-:root {
-    --chart-color-1: #331436; /* Substitui o vinho escuro atual */
-    --chart-color-2: #7A1745; /* Um tom de vinho mais vibrante */
-    --chart-color-3: #CB4F57; /* Coral/rosado mais suave */
-    --chart-color-4: #EB9961; /* Laranja pastel */
-    --chart-color-5: #FCF4B6; /* Amarelo claro */
-    --chart-color-6: #331436; /* Reutiliza o roxo escuro para consistência */
-    --chart-color-7: #7A1745; /* Reutiliza o vinho */
-    --chart-color-8: #CB4F57; /* Reforça o vermelho coral */
+  }
+  .sidebar-toggle {
+    display: inline-flex;
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 1100;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: #9e2d4a;
+    cursor: pointer;
+  }
+  .logo-container {
+    margin-left: 60px;
+  }
+  .content {
+    margin-left: 0 !important;
+    padding: 16px 4vw 32px 4vw;
+  }
 }
 
 @media (max-width: 900px) {

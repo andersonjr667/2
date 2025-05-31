@@ -1,3 +1,8 @@
+// Garante que window.getAuthHeaders existe
+if (typeof window.getAuthHeaders !== 'function') {
+    window.getAuthHeaders = () => ({});
+}
+
 let members = [];
 let currentMemberId = null;
 
@@ -13,7 +18,9 @@ const attendanceFilter = document.getElementById('attendanceFilter');
 // Load members
 async function loadMembers() {
     try {
-        const response = await fetch('/db/members.json');
+        const response = await fetch('/api/members', {
+            headers: window.getAuthHeaders()
+        });
         if (!response.ok) throw new Error('Erro ao carregar membros');
         members = await response.json();
         filterAndRenderMembers();
@@ -109,7 +116,7 @@ function renderMembers(membersToRender) {
             ? Object.values(member.address).filter(Boolean).join(', ')
             : (member.address || '');
         return `
-        <div class="member-card">
+        <div class="member-card" data-id="${member._id}" data-status="${member.status || 'ativo'}">
             <div class="member-header">
                 <h3 class="member-name">${member.name || ''}</h3>
                 <span class="member-status ${member.status || 'ativo'}">${member.status || 'ativo'}</span>
@@ -123,19 +130,22 @@ function renderMembers(membersToRender) {
                 ${member.createdAt ? `<p><i class='fas fa-calendar-plus'></i> Cadastro: ${new Date(member.createdAt).toLocaleDateString()}</p>` : ''}
             </div>
             <div class="member-actions">
-                <button class="btn-edit" onclick="editMember('${member._id}')">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="btn-delete" onclick="confirmDeleteMember('${member._id}', '${member.name}')">
-                    <i class="fas fa-trash"></i> Excluir
-                </button>
-                <button class="btn-status" onclick="toggleStatus('${member._id}', '${member.status || 'ativo'}')">
-                    <i class="fas fa-exchange-alt"></i> ${member.status === 'inativo' ? 'Ativar' : 'Desativar'}
-                </button>
+                <button class="btn-edit"><i class="fas fa-edit"></i> Editar</button>
+                <button class="btn-delete"><i class="fas fa-trash"></i> Excluir</button>
+                <button class="btn-status"><i class="fas fa-exchange-alt"></i> ${member.status === 'inativo' ? 'Ativar' : 'Desativar'}</button>
             </div>
         </div>
         `;
     }).join('');
+
+    // Adiciona listeners após renderizar
+    document.querySelectorAll('.member-card').forEach(card => {
+        const id = card.getAttribute('data-id');
+        const status = card.getAttribute('data-status');
+        card.querySelector('.btn-edit').addEventListener('click', () => editMember(id));
+        card.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteMember(id, card.querySelector('.member-name').textContent));
+        card.querySelector('.btn-status').addEventListener('click', () => toggleStatus(id, status));
+    });
 }
 
 // Filtro de status e presença
@@ -168,28 +178,71 @@ function filterAndRenderMembers() {
     renderMembers(filtered);
 }
 
+// Handle form submission (criar/editar)
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    const formData = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        birthDate: document.getElementById('birthDate').value,
+        status: document.getElementById('status').value,
+        address: document.getElementById('address').value,
+        discipleBy: document.getElementById('discipleBy').value
+    };
+    try {
+        const url = currentMemberId 
+            ? `/api/members/${currentMemberId}` 
+            : '/api/members';
+        const method = currentMemberId ? 'PUT' : 'POST';
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...window.getAuthHeaders()
+            },
+            body: JSON.stringify(formData)
+        });
+        if (!response.ok) throw new Error('Erro ao salvar membro');
+        await loadMembers();
+        modal.style.display = 'none';
+        showToast('Membro salvo com sucesso');
+    } catch (error) {
+        showToast('Erro ao salvar membro', 'error');
+    }
+}
+
 // Edit member
 async function editMember(id) {
     try {
         currentMemberId = id;
         const member = members.find(m => m._id === id);
         if (!member) throw new Error('Membro não encontrado');
-
-        document.getElementById('name').value = member.name || '';
-        document.getElementById('phone').value = member.phone || '';
-        document.getElementById('email').value = member.email || '';
-        document.getElementById('status').value = member.status || 'ativo';
-        document.getElementById('address').value = member.address || '';
-        document.getElementById('discipleBy').value = member.discipleBy || '';
-        
-        if (member.birthDate) {
-            document.getElementById('birthDate').value = member.birthDate.split('T')[0];
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const statusInput = document.getElementById('status');
+        const addressInput = document.getElementById('address');
+        const discipleByInput = document.getElementById('discipleBy');
+        const birthDateInput = document.getElementById('birthDate');
+        if (!nameInput || !phoneInput || !emailInput || !statusInput || !addressInput || !discipleByInput || !birthDateInput) {
+            throw new Error('Campos do formulário não encontrados no HTML. Verifique o modal de edição.');
         }
-
+        nameInput.value = member.name || '';
+        phoneInput.value = member.phone || '';
+        emailInput.value = member.email || '';
+        statusInput.value = member.status || 'ativo';
+        addressInput.value = member.address || '';
+        discipleByInput.value = member.discipleBy || '';
+        if (member.birthDate) {
+            birthDateInput.value = member.birthDate.split('T')[0];
+        } else {
+            birthDateInput.value = '';
+        }
         modalTitle.textContent = 'Editar Membro';
         modal.style.display = 'block';
     } catch (error) {
-        showToast('Erro ao carregar dados do membro', 'error');
+        showDetailedError(error, 'editMember');
     }
 }
 
@@ -203,15 +256,14 @@ function confirmDeleteMember(id, name) {
 async function deleteMember(id) {
     try {
         const response = await fetch(`/api/members/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: window.getAuthHeaders()
         });
-
         if (!response.ok) throw new Error('Erro ao excluir membro');
-
         await loadMembers();
         showToast('Membro excluído com sucesso');
     } catch (error) {
-        showToast('Erro ao excluir membro', 'error');
+        showDetailedError(error, 'deleteMember');
     }
 }
 
@@ -222,59 +274,35 @@ async function toggleStatus(id, currentStatus) {
         const response = await fetch(`/api/members/${id}/status`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...window.getAuthHeaders()
             },
             body: JSON.stringify({ status: newStatus })
         });
-
         if (!response.ok) throw new Error('Erro ao alterar status');
-
         await loadMembers();
         showToast(`Status alterado para ${newStatus}`);
     } catch (error) {
-        showToast('Erro ao alterar status', 'error');
-    }
-}
-
-// Handle form submission
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        birthDate: document.getElementById('birthDate').value,
-        status: document.getElementById('status').value,
-        address: document.getElementById('address').value,
-        discipleBy: document.getElementById('discipleBy').value
-    };
-
-    try {
-        const url = currentMemberId 
-            ? `/api/members/${currentMemberId}` 
-            : '/api/members';
-            
-        const response = await fetch(url, {
-            method: currentMemberId ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (!response.ok) throw new Error('Erro ao salvar membro');
-
-        await loadMembers();
-        modal.style.display = 'none';
-        showToast(currentMemberId ? 'Membro atualizado com sucesso!' : 'Membro adicionado com sucesso!');
-        
-    } catch (error) {
-        showToast('Erro ao salvar membro', 'error');
+        showDetailedError(error, 'toggleStatus');
     }
 }
 
 // Initialize page
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const menuOverlay = document.querySelector('.menu-overlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+  }
+  if (sidebarToggle && sidebar && menuOverlay) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    menuOverlay.addEventListener('click', toggleSidebar);
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     loadMembers();
     
@@ -286,11 +314,17 @@ document.addEventListener('DOMContentLoaded', () => {
     attendanceFilter.addEventListener('change', filterAndRenderMembers);
     
     // Modal controls
-    document.querySelector('.close').onclick = () => modal.style.display = 'none';
+    const closeModal = () => { modal.style.display = 'none'; };
+    document.querySelector('.close').onclick = closeModal;
+    document.querySelectorAll('.close-modal').forEach(btn => btn.onclick = closeModal);
     window.onclick = (e) => {
-        if (e.target === modal) modal.style.display = 'none';
+        if (e.target === modal) closeModal();
     };
     
+    // Garante que o form não duplique listeners
+    memberForm.onsubmit = null;
+    memberForm.addEventListener('submit', handleFormSubmit);
+
     document.getElementById('addMemberBtn').onclick = () => {
         currentMemberId = null;
         memberForm.reset();
@@ -324,10 +358,24 @@ function showToast(message, type = 'success') {
     toast.className = `toast toast-${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
-    
     setTimeout(() => {
         toast.remove();
-    }, 3000);
+    }, 3500);
+}
+
+// Função para mostrar erros detalhados no console e na tela
+function showDetailedError(error, context = '') {
+    let msg = '[MEMBERS]';
+    if (context) msg += ` [${context}]`;
+    if (error instanceof Error) {
+        msg += ` ${error.message}`;
+        if (error.stack) console.error(msg, error.stack);
+        else console.error(msg);
+    } else {
+        msg += ` ${error}`;
+        console.error(msg);
+    }
+    showToast(msg, 'error');
 }
 
 // Expor funções globais para onclick inline

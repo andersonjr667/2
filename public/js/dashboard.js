@@ -1,3 +1,8 @@
+// Garante que window.getAuthHeaders existe
+if (typeof window.getAuthHeaders !== 'function') {
+    window.getAuthHeaders = () => ({ 'Content-Type': 'application/json' });
+}
+
 // Initialize dashboard
 async function initializeDashboard() {
     try {
@@ -48,6 +53,28 @@ function initializeEventListeners() {
 
     // Atualizar o event listener do formulário de adição rápida
     const quickAddForm = document.getElementById('quickAddForm');
+    const quickPhoneInput = document.getElementById('quickPhone');
+    if (quickPhoneInput) {
+        // Máscara dinâmica para telefone brasileiro (11 dígitos)
+        quickPhoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            // Formatação: (XX) 9XXXX-XXXX
+            if (value.length > 2) value = `(${value.slice(0,2)}) ${value.slice(2)}`;
+            if (value.length > 10) value = `${value.slice(0, 10)}-${value.slice(10)}`;
+            e.target.value = value;
+        });
+        // Impede colar valores inválidos
+        quickPhoneInput.addEventListener('paste', function (e) {
+            e.preventDefault();
+            let paste = (e.clipboardData || window.clipboardData).getData('text');
+            paste = paste.replace(/\D/g, '').slice(0, 11);
+            let value = paste;
+            if (value.length > 2) value = `(${value.slice(0,2)}) ${value.slice(2)}`;
+            if (value.length > 10) value = `${value.slice(0, 10)}-${value.slice(10)}`;
+            e.target.value = value;
+        });
+    }
     if (quickAddForm) {
         quickAddForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -58,8 +85,10 @@ function initializeEventListeners() {
             const phone = document.getElementById('quickPhone').value;
             const birthday = document.getElementById('quickBirthday').value;
 
-            if (!name || !phone) {
-                showError('Nome e telefone são obrigatórios');
+            // Validação: telefone deve ter 11 dígitos (apenas números)
+            const phoneDigits = phone.replace(/\D/g, '');
+            if (!name || !phone || phoneDigits.length !== 11) {
+                showError('Nome e telefone válidos são obrigatórios. Telefone deve ter 11 dígitos.');
                 if (submitBtn) submitBtn.disabled = false;
                 return;
             }
@@ -105,42 +134,32 @@ function initializeEventListeners() {
 // Wait for DOM to be ready
 // Unifica toda a inicialização em um único bloco assíncrono
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // Pequeno delay para garantir que localStorage está atualizado após login
-    await new Promise(resolve => setTimeout(resolve, 100));
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const menuOverlay = document.querySelector('.menu-overlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+  }
+  if (sidebarToggle && sidebar && menuOverlay) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    menuOverlay.addEventListener('click', toggleSidebar);
+  }
 
-    // Removido: if (!initializePage()) return;
-
+  // Pequeno delay para garantir que localStorage está atualizado após login
+  setTimeout(async () => {
     // Aguarda autenticação real antes de prosseguir
     const isAuth = await checkAuth();
     if (!isAuth) return;
-
     // Initialize event listeners
     initializeEventListeners();
     // Initialize dashboard data
     initializeDashboard();
     // Set up periodic refresh
     setInterval(initializeDashboard, 30000);
-
-    // Sidebar/menu listeners
-    const sidebarToggle = document.querySelector('.sidebar-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    const menuOverlay = document.querySelector('.menu-overlay');
-    const content = document.querySelector('.content');
-
-    function toggleSidebar() {
-        sidebar.classList.toggle('active');
-        menuOverlay.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-    }
-
-    if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
-    if (menuOverlay) menuOverlay.addEventListener('click', toggleSidebar);
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && sidebar && sidebar.classList.contains('active')) {
-            toggleSidebar();
-        }
-    });
+  }, 100);
 });
 
 // Helper function to add a contact quickly
@@ -239,14 +258,25 @@ function updateContactsList(contacts) {
                     </span>
                 </div>
                 <div class="activity-col">
-                    <button onclick="showActions('${contact._id}', event)" class="action-trigger">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
+                    <div class="action-dropdown-wrapper" style="min-width:40px; min-height:40px; display:flex; align-items:center; justify-content:center;">
+                        <button class="action-trigger" data-contact-id="${contact._id}" title="Ações" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:none;border:none;padding:0;border-radius:50%;font-size:1.3em;color:#444;cursor:pointer;transition:background 0.2s;">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         `).join('');
 
     activityList.innerHTML = header + contactsHtml;
+
+    // Adiciona event listeners aos botões de ação após renderização
+    document.querySelectorAll('.action-trigger').forEach(btn => {
+        btn.addEventListener('click', function(event) {
+            event.stopPropagation(); // Impede propagação para não fechar imediatamente
+            const contactId = btn.getAttribute('data-contact-id');
+            showActions(contactId, event);
+        });
+    });
 }
 
 // Helper function to format phone numbers
@@ -262,30 +292,95 @@ function formatPhone(phone) {
 }
 
 // Add action handlers
+// Substitua a função showActions por esta versão corrigida
 function showActions(contactId, event) {
     event.preventDefault();
     event.stopPropagation();
     
-    const dropdown = document.getElementById('actionDropdown');
-    const button = event.currentTarget;
-    const rect = button.getBoundingClientRect();
-    
-    // Hide any open dropdowns first
+    // Esconde todos os dropdowns abertos
     hideAllDropdowns();
     
-    // Position dropdown
-    dropdown.style.display = 'block';
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = `${rect.bottom + window.scrollY}px`;
-    dropdown.style.left = `${rect.left - 150}px`;
+    const dropdown = document.getElementById('actionDropdown');
+    const button = event.currentTarget;
+    const contactItem = button.closest('.activity-item');
     
-    // Store current contact ID
+    if (!dropdown || !contactItem) return;
+    
+    // Move o dropdown para dentro do card do contato
+    const card = button.closest('.activity-item');
+    if (card) {
+        card.appendChild(dropdown);
+        // Função para alinhar o dropdown à direita do botão, sempre visível
+        function updateDropdownPosition() {
+            const btnRect = button.getBoundingClientRect();
+            const cardRect = card.getBoundingClientRect();
+            // Posição do botão relativa ao card
+            let left = btnRect.right - cardRect.left - dropdown.offsetWidth;
+            let top = btnRect.bottom - cardRect.top + 4;
+            // Garante que não ultrapasse o card
+            if (left < 0) left = 0;
+            if (left + dropdown.offsetWidth > card.offsetWidth) {
+                left = card.offsetWidth - dropdown.offsetWidth - 8;
+            }
+            dropdown.style.position = 'absolute';
+            dropdown.style.left = `${left}px`;
+            dropdown.style.top = `${top}px`;
+            dropdown.style.minWidth = '180px';
+            dropdown.style.maxWidth = `${card.offsetWidth - 16}px`;
+        }
+        updateDropdownPosition();
+        // Remove listeners antigos
+        if (dropdown._removeListeners) dropdown._removeListeners();
+        card.addEventListener('scroll', updateDropdownPosition, true);
+        window.addEventListener('resize', updateDropdownPosition, true);
+        window.addEventListener('scroll', updateDropdownPosition, true);
+        dropdown._removeListeners = function() {
+            card.removeEventListener('scroll', updateDropdownPosition, true);
+            window.removeEventListener('resize', updateDropdownPosition, true);
+            window.removeEventListener('scroll', updateDropdownPosition, true);
+        };
+    }
+    dropdown.style.display = 'block';
     dropdown.setAttribute('data-contact-id', contactId);
+    // Reatribui listeners dos botões do dropdown sempre que mostrar
+    dropdown.querySelectorAll('.action-btn').forEach(button => {
+        button.onclick = async (e) => {
+            e.stopPropagation();
+            const action = button.dataset.action;
+            try {
+                switch (action) {
+                    case 'message': await sendMessage(contactId); break;
+                    case 'edit': await editContact(contactId); break;
+                    case 'delete': await deleteContact(contactId); break;
+                    case 'convert': await convertToMember(contactId); break;
+                    default: console.error('Unknown action:', action);
+                }
+            } catch (error) {
+                console.error(`Error executing action ${action}:`, error);
+                showError('Erro ao executar ação');
+            } finally {
+                hideAllDropdowns();
+            }
+        };
+    });
 }
 
+// Mantenha a função hideAllDropdowns como está
 function hideAllDropdowns() {
     const dropdowns = document.querySelectorAll('.action-dropdown');
-    dropdowns.forEach(dropdown => dropdown.style.display = 'none');
+    dropdowns.forEach(dropdown => {
+        dropdown.style.display = 'none';
+        if (dropdown._removeListeners) {
+            dropdown._removeListeners();
+        }
+    });
+}
+
+function closeDropdownOnClickOutside(e) {
+    const dropdown = document.getElementById('actionDropdown');
+    if (!dropdown.contains(e.target)) {
+        hideAllDropdowns();
+    }
 }
 
 // Event listeners for action buttons
@@ -328,7 +423,7 @@ actionButtons.forEach(button => {
 async function sendMessage(contactId) {
     const response = await fetch(`/api/contacts/${contactId}/message`, {
         method: 'POST',
-        headers: window.headers
+        headers: getAuthHeaders()
     });
     
     if (!response.ok) {
@@ -338,19 +433,42 @@ async function sendMessage(contactId) {
     showError('Mensagem enviada com sucesso');
 }
 
+// Editar contato (abre prompt simples)
 async function editContact(contactId) {
-    // Implementation will be added later
-    showError('Funcionalidade em desenvolvimento');
+    try {
+        // Busca dados atuais do contato
+        const response = await fetch(`/api/contacts`);
+        const contacts = await response.json();
+        const contact = contacts.find(c => c._id === contactId);
+        if (!contact) return showError('Contato não encontrado');
+        // Prompt simples para edição (pode ser substituído por modal depois)
+        const name = prompt('Nome:', contact.name);
+        if (name === null) return;
+        const phone = prompt('Telefone (apenas números):', contact.phone);
+        if (phone === null) return;
+        const birthday = prompt('Data de aniversário (YYYY-MM-DD):', contact.birthday || '');
+        if (birthday === null) return;
+        // Atualiza contato
+        const putResp = await fetch(`/api/contacts/${contactId}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ name, phone, birthday })
+        });
+        if (!putResp.ok) throw new Error('Erro ao editar contato');
+        await initializeDashboard();
+        showError('Contato editado com sucesso');
+    } catch (err) {
+        showError('Erro ao editar contato');
+    }
 }
 
 async function deleteContact(contactId) {
     if (!confirm('Tem certeza que deseja excluir este contato?')) {
         return;
     }
-    
     const response = await fetch(`/api/contacts/${contactId}`, {
         method: 'DELETE',
-        headers: window.headers
+        headers: getAuthHeaders()
     });
     
     if (!response.ok) {
@@ -364,7 +482,7 @@ async function deleteContact(contactId) {
 async function convertToMember(contactId) {
     const response = await fetch(`/api/contacts/${contactId}/convert`, {
         method: 'POST',
-        headers: window.headers
+        headers: getAuthHeaders()
     });
     
     if (!response.ok) {
@@ -455,3 +573,19 @@ function addSafeEventListener(elementId, event, handler) {
         element.addEventListener(event, handler);
     }
 }
+
+// Sidebar toggle para mobile (padrão users.js)
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const menuOverlay = document.querySelector('.menu-overlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+  }
+  if (sidebarToggle && sidebar && menuOverlay) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    menuOverlay.addEventListener('click', toggleSidebar);
+  }
+});

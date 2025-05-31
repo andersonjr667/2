@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- Sidebar toggle button for mobile -->
-    <button class="sidebar-toggle">
+    <button class="sidebar-toggle" aria-label="Abrir menu lateral">
         <i class="fas fa-bars"></i>
     </button>
 
@@ -41,8 +41,9 @@
             <h1>Membros - Boa Parte</h1>
             <div class="user-info">
                 <span class="user-name-display">
-                    <i class="fas fa-user"></i> 
-                    <span id="userName">Administrador</span>
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Carregando...</span>
+                    <img id="profilePic" src="../images/Fotos_Perfil/anderson.png" alt="Foto de perfil" style="display:none;width:32px;height:32px;border-radius:50%;margin-left:8px;object-fit:cover;vertical-align:middle;">
                 </span>
             </div>
             <div class="header-actions">
@@ -191,6 +192,7 @@
     <!-- Add these scripts before your other scripts -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="../js/members.js"></script>
+    <script src="/js/maintenance.js"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     // ...existing code...
@@ -209,6 +211,20 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = '';
         });
     }
+    // Exibe foto de perfil para Anderson ou Luiz Felipe
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        var pic = document.getElementById('profilePic');
+        if (user && pic) {
+            if (user.username === 'Anderson' || user.name === 'Anderson') {
+                pic.src = '../images/Fotos_Perfil/anderson.png';
+                pic.style.display = '';
+            } else if (user.username === 'Luiz Felipe' || user.name === 'Luiz Felipe') {
+                pic.src = '../images/Fotos_Perfil/Luiz.png';
+                pic.style.display = '';
+            }
+        }
+    } catch {}
 });
 </script>
 </body>

@@ -1,5 +1,5 @@
 // WhatsApp Configuration Page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     // Estabelece conexão com Socket.IO
     const socket = io();
 
@@ -64,4 +64,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Verificação inicial do status
     socket.emit('checkStatus');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebarToggle = document.querySelector('.sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const menuOverlay = document.querySelector('.menu-overlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    menuOverlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+  }
+  if (sidebarToggle && sidebar && menuOverlay) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    menuOverlay.addEventListener('click', toggleSidebar);
+  }
 });

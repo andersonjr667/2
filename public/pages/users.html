@@ -50,31 +50,34 @@
     </style>
 </head>
 <body>
-    <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+    <!-- Sidebar toggle button for mobile -->
+    <button class="sidebar-toggle" aria-label="Abrir menu lateral"><i class="fas fa-bars"></i></button>
+    <!-- Menu overlay for mobile -->
     <div class="menu-overlay"></div>
     <div class="logo-container">
         <img src="../images/image.png" alt="Logo" class="logo">
     </div>
     <nav class="sidebar">
-    <ul class="nav-menu">
-        <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
-        <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
-        <li class="admin-only"><a href="users.html" class="active"><i class="fas fa-user-cog"></i> Usuários</a></li>
-        <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
-        <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
-    </ul>
-    <div class="sidebar-footer">
-        <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
-    </div>
-</nav>
-<main class="content">
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="members.html"><i class="fas fa-users"></i> Membros</a></li>
+            <li><a href="absent-members.html"><i class="fas fa-user-clock"></i> Ausentes</a></li>
+            <li class="admin-only"><a href="users.html" class="active"><i class="fas fa-user-cog"></i> Usuários</a></li>
+            <li class="admin-only"><a href="admin-panel.html"><i class="fas fa-tools"></i> Admin</a></li>
+            <li class="admin-only"><a href="whatsapp-config.html"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </div>
+    </nav>
+    <main class="content">
     <header class="content-header">
         <h1>Users - Boa Parte</h1>
         <div class="user-info">
             <span class="user-name-display">
                 <i class="fas fa-user"></i>
                 <span id="userName">Carregando...</span>
+                <img id="profilePic" src="../images/Fotos_Perfil/anderson.png" alt="Foto de perfil" style="display:none;width:32px;height:32px;border-radius:50%;margin-left:8px;object-fit:cover;vertical-align:middle;">
             </span>
         </div>
     </header>
@@ -93,20 +96,22 @@
         </div>
     </div>
     <div class="users-container">
-        <table id="usersTable">
-            <thead>
-                <tr>
-                    <th>Nome de Usuário</th>
-                    <th>Função</th>
-                    <th>Criado em</th>
-                    <th>ID</th>
-                    <th class="admin-only">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Conteúdo dinâmico -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Nome de Usuário</th>
+                        <th>Função</th>
+                        <th>Criado em</th>
+                        <th>ID</th>
+                        <th class="admin-only">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Conteúdo dinâmico -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 <script>
@@ -161,10 +166,10 @@
                 <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
                 <td>${user._id || '-'}</td>
                 <td class="actions admin-only">
-                    <button class="icon-btn btn-role" title="Alterar papel" onclick="changeRole('${user._id}', '${user.role}')">
+                    <button class="icon-btn btn-role" title="Alterar papel" data-action="role" data-user-id="${user._id}" data-user-role="${user.role}">
                         <i class="material-icons">swap_horiz</i>
                     </button>
-                    <button class="icon-btn btn-delete" title="Excluir usuário" onclick="confirmDelete('${user._id}', '${user.username}')">
+                    <button class="icon-btn btn-delete" title="Excluir usuário" data-action="delete" data-user-id="${user._id}" data-username="${user.username}">
                         <i class="material-icons">delete</i>
                     </button>
                 </td>
@@ -182,6 +187,7 @@
 
     function renderUsers(users, currentUser) {
       const container = document.getElementById('users-list');
+      if (!container) return;
       container.innerHTML = '';
       users.forEach(user => {
         const userDiv = document.createElement('div');
@@ -191,10 +197,10 @@
           <span class="user-role">${user.role}</span>
           ${
             currentUser && currentUser.role === 'admin' ? `
-            <button class="icon-btn btn-role" title="Alterar papel" onclick="changeRole('${user._id || user.id}')">
+            <button class="icon-btn btn-role" title="Alterar papel" data-action="role" data-user-id="${user._id || user.id}" data-user-role="${user.role}">
               <span class="material-icons" aria-label="Alterar papel">swap_horiz</span>
             </button>
-            <button class="icon-btn btn-delete" title="Excluir usuário" onclick="deleteUser('${user._id || user.id}')">
+            <button class="icon-btn btn-delete" title="Excluir usuário" data-action="delete" data-user-id="${user._id || user.id}" data-username="${user.username}">
               <span class="material-icons" aria-label="Excluir">delete</span>
             </button>
             ` : ''
@@ -279,8 +285,23 @@
                 document.body.style.overflow = '';
             });
         }
+        // Exibe foto de perfil para Anderson ou Luiz Felipe
+    try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        var pic = document.getElementById('profilePic');
+        if (user && pic) {
+            if (user.username === 'Anderson' || user.name === 'Anderson') {
+                pic.src = '../images/Fotos_Perfil/anderson.png';
+                pic.style.display = '';
+            } else if (user.username === 'Luiz Felipe' || user.name === 'Luiz Felipe') {
+                pic.src = '../images/Fotos_Perfil/Luiz.png';
+                pic.style.display = '';
+            }
+        }
+    } catch {}
     });
     </script>
     <script src="../js/init.js"></script>
+    <script src="/js/maintenance.js"></script>
 </body>
 </html>

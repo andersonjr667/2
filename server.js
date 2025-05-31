@@ -249,8 +249,205 @@ try {
 // Tornar a versão disponível globalmente
 app.set('sessionVersion', sessionVersion);
 
+// --- INÍCIO: Rotas REST CRUD de membros (JSON) ---
+const membersPath = path.join(__dirname, 'db', 'members.json');
+
+// Listar membros (corrige para não filtrar por role e garantir array)
+app.get('/api/members', async (req, res) => {
+    try {
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        if (!Array.isArray(members)) members = [];
+        res.json(members);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao carregar membros' });
+    }
+});
+
+// Criar membro
+app.post('/api/members', async (req, res) => {
+    try {
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const newMember = {
+            _id: Date.now().toString(),
+            ...req.body,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        members.push(newMember);
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(newMember);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao adicionar membro' });
+    }
+});
+
+// Editar membro
+app.put('/api/members/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberIndex = members.findIndex(m => m._id === id);
+        if (memberIndex === -1) {
+            return res.status(404).json({ message: 'Membro não encontrado' });
+        }
+        members[memberIndex] = {
+            ...members[memberIndex],
+            ...req.body,
+            _id: id,
+            updatedAt: new Date().toISOString()
+        };
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(members[memberIndex]);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar membro' });
+    }
+});
+
+// Excluir membro
+app.delete('/api/members/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberToDelete = members.find(m => m._id === id);
+        members = members.filter(m => m._id !== id);
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(memberToDelete || { message: 'Membro excluído com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao excluir membro' });
+    }
+});
+
+// Alterar status do membro
+app.put('/api/members/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const memberIndex = members.findIndex(m => m._id === id);
+        if (memberIndex === -1) {
+            return res.status(404).json({ message: 'Membro não encontrado' });
+        }
+        members[memberIndex].status = status;
+        members[memberIndex].updatedAt = new Date().toISOString();
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        res.json(members[memberIndex]);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar status' });
+    }
+});
+// --- FIM: Rotas REST CRUD de membros (JSON) ---
+
+// --- INÍCIO: Rotas REST CRUD de contatos (JSON) ---
+const contactsPath = path.join(__dirname, 'db', 'contacts.json');
+
+// Listar contatos
+app.get('/api/contacts', async (req, res) => {
+    try {
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        // Garante que todos os contatos tenham o campo status
+        contacts = contacts.map(c => ({ ...c, status: c.status || 'novo' }));
+        res.json(contacts);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao carregar contatos' });
+    }
+});
+
+// Criar contato
+app.post('/api/contacts', async (req, res) => {
+    try {
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        const newContact = {
+            _id: Date.now().toString(),
+            name: req.body.name,
+            phone: req.body.phone.replace(/\D/g, ''),
+            owner: req.body.owner || req.body.username || 'admin',
+            username: req.body.username || 'admin',
+            birthday: req.body.birthday || null,
+            receivedMessage: false,
+            createdAt: new Date().toISOString(),
+            status: 'novo',
+            __v: 0
+        };
+        contacts.push(newContact);
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+        res.json(newContact);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao adicionar contato' });
+    }
+});
+
+// Excluir contato
+app.delete('/api/contacts/:id', async (req, res) => {
+    try {
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        const contactToDelete = contacts.find(c => c._id === req.params.id);
+        contacts = contacts.filter(c => c._id !== req.params.id);
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+        res.json(contactToDelete || { message: 'Contato excluído com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao excluir contato' });
+    }
+});
+
+// Editar contato
+app.put('/api/contacts/:id', async (req, res) => {
+    try {
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        const idx = contacts.findIndex(c => c._id === req.params.id);
+        if (idx === -1) return res.status(404).json({ message: 'Contato não encontrado' });
+        contacts[idx] = {
+            ...contacts[idx],
+            ...req.body,
+            _id: req.params.id,
+            phone: req.body.phone ? req.body.phone.replace(/\D/g, '') : contacts[idx].phone,
+            updatedAt: new Date().toISOString()
+        };
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+        res.json(contacts[idx]);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao editar contato' });
+    }
+});
+
+// Converter contato em membro
+app.post('/api/contacts/:id/convert', async (req, res) => {
+    try {
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const idx = contacts.findIndex(c => c._id === req.params.id);
+        if (idx === -1) return res.status(404).json({ message: 'Contato não encontrado' });
+        const contact = contacts[idx];
+        // Cria membro a partir do contato
+        const newMember = {
+            _id: Date.now().toString(),
+            name: contact.name,
+            phone: contact.phone,
+            birthday: contact.birthday,
+            owner: contact.owner,
+            username: contact.username,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            status: 'novo',
+            __v: 0
+        };
+        members.push(newMember);
+        // Remove contato convertido
+        contacts = contacts.filter(c => c._id !== req.params.id);
+        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+        res.json(newMember);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao converter contato' });
+    }
+});
+// --- FIM: Rotas REST CRUD de contatos (JSON) ---
+
+// --- INÍCIO: Rotas de autenticação ---
+app.use('/api/auth', require('./routes/auth'));
+// --- FIM: Rotas de autenticação ---
+
 // API Routes
-app.use('/api', routes);
+// app.use('/api', routes); // <-- Deixe comentado ou remova para não sobrescrever as rotas CRUD JSON
 
 // Serve static files and handle SPA routes
 app.get('*', (req, res) => {
@@ -288,6 +485,25 @@ app.use((req, res, next) => {
         "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com"
     );
     next();
+});
+
+// Middleware de manutenção (frontend)
+app.use((req, res, next) => {
+  // Permite acesso à página de manutenção e arquivos estáticos
+  if (req.path === '/maintenance.html' || req.path.startsWith('/js/maintenance.js') || req.path.startsWith('/styles/')) {
+    return next();
+  }
+  // Controle via variável de ambiente ou arquivo (pode ser melhorado para produção)
+  const maintenanceMode = false; // Troque para true para ativar manutenção global
+  if (maintenanceMode) {
+    return res.sendFile(path.join(__dirname, 'public', 'maintenance.html'));
+  }
+  next();
+});
+
+// Rota 404 amigável
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 // Connect to MongoDB and start server
@@ -347,82 +563,6 @@ process.on('uncaughtException', async (err) => {
 process.on('unhandledRejection', async (err) => {
     console.error(`${colors.red}❌ Promise rejeitada:${colors.reset}`, err);
     await Log.logError(err, { level: 'critical', source: 'system' });
-});
-
-// Rotas para membros
-app.post('/api/members', async (req, res) => {
-    try {
-        const membersPath = path.join(__dirname, 'db', 'members.json');
-        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
-        const newMember = {
-            _id: Date.now().toString(),
-            ...req.body,
-            createdAt: new Date().toISOString()
-        };
-        members.push(newMember);
-        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
-        res.json(newMember);
-    } catch (error) {
-        console.error('Erro ao adicionar membro:', error);
-        res.status(500).json({ message: 'Erro ao adicionar membro' });
-    }
-});
-
-app.put('/api/members/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const membersPath = path.join(__dirname, 'db', 'members.json');
-        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
-        const memberIndex = members.findIndex(m => m._id === id);
-        if (memberIndex === -1) {
-            return res.status(404).json({ message: 'Membro não encontrado' });
-        }
-        members[memberIndex] = {
-            ...members[memberIndex],
-            ...req.body,
-            _id: id,
-            updatedAt: new Date().toISOString()
-        };
-        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
-        res.json(members[memberIndex]);
-    } catch (error) {
-        console.error('Erro ao atualizar membro:', error);
-        res.status(500).json({ message: 'Erro ao atualizar membro' });
-    }
-});
-
-app.delete('/api/members/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const membersPath = path.join(__dirname, 'db', 'members.json');
-        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
-        const memberToDelete = members.find(m => m._id === id);
-        members = members.filter(m => m._id !== id);
-        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
-        res.json(memberToDelete || { message: 'Membro excluído com sucesso' });
-    } catch (error) {
-        console.error('Erro ao excluir membro:', error);
-        res.status(500).json({ message: 'Erro ao excluir membro' });
-    }
-});
-
-app.put('/api/members/:id/status', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { status } = req.body;
-        const membersPath = path.join(__dirname, 'db', 'members.json');
-        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
-        const memberIndex = members.findIndex(m => m._id === id);
-        if (memberIndex === -1) {
-            return res.status(404).json({ message: 'Membro não encontrado' });
-        }
-        members[memberIndex].status = status;
-        await fs.writeFile(membersPath, JSON.stringify(members, null, 2));
-        res.json(members[memberIndex]);
-    } catch (error) {
-        console.error('Erro ao atualizar status:', error);
-        res.status(500).json({ message: 'Erro ao atualizar status' });
-    }
 });
 
 // Start the server

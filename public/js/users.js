@@ -48,8 +48,7 @@ function renderUserTable(users) {
 document.addEventListener('DOMContentLoaded', fetchAndRenderUsers);
 
 document.addEventListener('DOMContentLoaded', () => {
-
-  // Sidebar toggle para mobile
+  // Sidebar toggle para mobile (modelo dashboard)
   const sidebarToggle = document.querySelector('.sidebar-toggle');
   const sidebar = document.querySelector('.sidebar');
   const menuOverlay = document.querySelector('.menu-overlay');
@@ -58,14 +57,49 @@ document.addEventListener('DOMContentLoaded', () => {
     menuOverlay.classList.toggle('active');
     document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
   }
-  sidebarToggle.addEventListener('click', toggleSidebar);
-  menuOverlay.addEventListener('click', toggleSidebar);
-
+  if (sidebarToggle && sidebar && menuOverlay) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    menuOverlay.addEventListener('click', toggleSidebar);
+  }
   // Logout
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
       window.location.href = '/pages/login.html';
+    });
+  }
+  // Delegated event listeners for user actions (table)
+  const usersTable = document.getElementById('usersTable');
+  if (usersTable) {
+    usersTable.addEventListener('click', function(e) {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const userId = btn.getAttribute('data-user-id');
+      if (action === 'role') {
+        const currentRole = btn.getAttribute('data-user-role');
+        changeRole(userId, currentRole);
+      } else if (action === 'delete') {
+        const username = btn.getAttribute('data-username');
+        confirmDelete(userId, username);
+      }
+    });
+  }
+  // Delegated event listeners for user actions (card view)
+  const usersList = document.getElementById('users-list');
+  if (usersList) {
+    usersList.addEventListener('click', function(e) {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const userId = btn.getAttribute('data-user-id');
+      if (action === 'role') {
+        const currentRole = btn.getAttribute('data-user-role');
+        changeRole(userId, currentRole);
+      } else if (action === 'delete') {
+        const username = btn.getAttribute('data-username');
+        confirmDelete(userId, username);
+      }
     });
   }
 });
