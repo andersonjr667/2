@@ -450,8 +450,11 @@ app.use('/api/auth', require('./routes/auth'));
 // app.use('/api', routes); // <-- Deixe comentado ou remova para não sobrescrever as rotas CRUD JSON
 
 // Serve static files and handle SPA routes
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rota 404 amigável (deve ser a última rota)
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 // Global error handler
@@ -501,11 +504,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rota 404 amigável
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
 // Connect to MongoDB and start server
 async function startServer() {
     try {
@@ -526,12 +524,20 @@ async function startServer() {
             console.log(`${colors.green}✓ Servidor rodando em:${colors.reset}`);
             console.log(`  └─ Local:   ${colors.cyan}http://localhost:${port}${colors.reset}`);
             
-            // Show all available network interfaces
-            Object.keys(networkInterfaces).forEach((interfaceName) => {
-                const interfaces = networkInterfaces[interfaceName];
-                interfaces.forEach((interface) => {
-                    if (interface.family === 'IPv4' && !interface.internal) {
-                        console.log(`  └─ Rede:    ${colors.cyan}http://${interface.address}:${port}${colors.reset}`);
+            // Show all available network interfaces (apenas interfaces físicas e ativas)
+            const netIfaces = require('os').networkInterfaces();
+            Object.keys(netIfaces).forEach((interfaceName) => {
+                // Ignora interfaces virtuais e loopback
+                if (/^(lo|Loopback|vEthernet|VMware|VirtualBox|docker|br-|tun|tap|enp0)/i.test(interfaceName)) return;
+                const interfaces = netIfaces[interfaceName];
+                interfaces.forEach((iface) => {
+                    if (
+                        iface.family === 'IPv4' &&
+                        !iface.internal &&
+                        iface.address &&
+                        iface.mac && iface.mac !== '00:00:00:00:00:00'
+                    ) {
+                        console.log(`  └─ Rede:    ${colors.cyan}http://${iface.address}:${port}${colors.reset}  [${interfaceName}]`);
                     }
                 });
             });

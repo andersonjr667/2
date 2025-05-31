@@ -11,6 +11,7 @@
     "_id": "67b31b931b0feadd8dac3aa3",
     "username": "thaynadias48@gmail.com",
     "password": "$2a$10$9YWHwqiKIuN3oG.74ilruuBEtv4gY4ew60iPruf.NrHfzU.tiByky",
+    "role": "user",
     "__v": 0
   },
   {
@@ -24,66 +25,77 @@
     "_id": "67b31f031b0feadd8dac3ab9",
     "username": "Luan ",
     "password": "$2a$10$n8YZXJXSQf/CgnYAaEC1auMcfUgDgMIxfYzH1YSbEyim160a2AU1q",
-    "__v": 0
+    "role": "user",
+    "__v": 0 
   },
   {
     "_id": "67b321362d384ca3330bf161",
     "username": "Victoria Roberta ",
     "password": "$2a$10$5AC4oC7q5kP2ayoEv37...I6PM04RGDoSF8s1KWMIB27JgSrvxA2u",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b3241d7d26f301f26fea18",
     "username": "Ingryd Rocha",
     "password": "$2a$10$AL2PDI5.SforpFy8D9O9lu7qvO.5SIlAU5vR1vbSJsRBerIN/cwbO",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b34760f6d231f6b6752d5f",
     "username": "VALQUIRIA VIEIRA",
     "password": "$2a$10$5A2Tv3j1l/8cdDk5rCrzRuA6Cr4zXgk.QVVyyVh3R9meO8LMtSTaa",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b35480fad2aa76149f9feb",
     "username": "Emanuelly melo",
     "password": "$2a$10$k84DWhLU5owiwnUcmKx3iOL0F4/2uTr8SPHH3GIXwG6Cj/1Vap9w2",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b354cafad2aa76149f9ff1",
     "username": "Emanuelly melo ",
     "password": "$2a$10$uNgML.SvO2vn8h8N8h.48eQRM/CYiD7RJ9sJv0m9/acDiU3xzSbLy",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b372e7052a6ccd5640ac3b",
     "username": "willgetter",
     "password": "$2a$10$P5T/D0W7PD3O82PcpB5aXu3zRk4wW29y3Z0Oz0BMbJOARfrgeQmf6",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b3c0d8d994fc0e60dfb037",
     "username": "Bianca ",
     "password": "$2a$10$/w9UK3y3SobszEr3IlQVLuwOIrK13sBW/GtuRPMhV1fggGUyBEpiO",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b3c154d994fc0e60dfb047",
     "username": "Mariana T",
     "password": "$2a$10$3MsgdRQZBm6Z7PVl9j5Xw.umzSLSnMRi4cxsyvlqzDNrqGwdOd4Ge",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b51b99c9297f49e2204e66",
     "username": "Pr. Thiago Vieira ",
     "password": "$2a$10$E3WqI52gUEzWJJbZ4UjsEepDf3FX4nwTShKsbzOj0kURy/VdQ8.bC",
+    "role": "user",
     "__v": 0
   },
   {
     "_id": "67b8eec16160336cc95eec04",
     "username": "Paulo Emanuel N",
     "password": "$2a$10$9hI6fGfZ03ay5aXl9vm6zu6Vip68hHLD0NVdclabXKcCP0SAWAMaq",
+    "role": "user",
     "createdAt": "2025-02-21T21:23:13.462Z",
     "__v": 0
   },

@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = '';
         });
     }
-    // Exibe foto de perfil para Anderson ou Luiz Felipe
+    // Exibe foto de perfil para Anderson, Luiz Felipe ou Paulo Emanuel N
     try {
         const user = JSON.parse(localStorage.getItem('user'));
         var pic = document.getElementById('profilePic');
@@ -109,7 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 pic.src = '../images/Fotos_Perfil/anderson.png';
                 pic.style.display = '';
             } else if (user.username === 'Luiz Felipe' || user.name === 'Luiz Felipe') {
-                pic.src = '../images/Fotos_Perfil/Luiz.png';
+                pic.src = '../images/Fotos_Perfil/luiz.jpg';
+                pic.style.display = '';
+            } else if (user.username === 'Paulo Emanuel N' || user.name === 'Paulo Emanuel N') {
+                pic.src = '../images/Fotos_Perfil/paulo.jpg';
                 pic.style.display = '';
             }
         }

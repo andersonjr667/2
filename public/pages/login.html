@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,221 +11,6 @@
     <link rel="stylesheet" href="../styles/login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="icon" href="../images/image.png">
-    <style>
-        body {
-            min-height: 100vh;
-            background: linear-gradient(120deg, #9e2d4a 0%, #450b1e 100%), url('../images/image.png') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Poppins', 'Inter', Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: inherit;
-            filter: blur(8px) brightness(0.7);
-            z-index: 0;
-        }
-        /* Círculos animados vermelho claro no fundo */
-        .animated-circles {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .circle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 60% 40%, #feffd4 0%, #ffb3c6 60%, #ffb3c6cc 100%);
-            opacity: 0.35;
-            animation: float 8s ease-in-out infinite alternate;
-        }
-        .circle1 {
-            width: 320px; height: 320px;
-            left: -80px; top: -60px;
-            animation-delay: 0s;
-        }
-        .circle2 {
-            width: 220px; height: 220px;
-            right: -60px; top: 30vh;
-            animation-delay: 2s;
-        }
-        .circle3 {
-            width: 180px; height: 180px;
-            left: 10vw; bottom: -60px;
-            animation-delay: 1.5s;
-        }
-        .circle4 {
-            width: 140px; height: 140px;
-            right: 12vw; bottom: 10vh;
-            animation-delay: 3.5s;
-        }
-        .circle5 {
-            width: 110px; height: 110px;
-            left: 60vw; top: 12vh;
-            animation-delay: 4.5s;
-        }
-        .circle6 {
-            width: 90px; height: 90px;
-            left: 80vw; bottom: 8vh;
-            animation-delay: 6s;
-        }
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-30px) scale(1.08); }
-        }
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 24px;
-            z-index: 1;
-        }
-        .logo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            box-shadow: 0 8px 32px rgba(33,0,15,0.18), 0 2px 8px rgba(33,0,15,0.10);
-            border: 5px solid #fff;
-            object-fit: cover;
-            background: #fff;
-        }
-        .login-container {
-            background: rgba(255,255,255,0.95);
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(33,0,15,0.18), 0 2px 8px rgba(33,0,15,0.10);
-            padding: 80px 40px 72px 40px;
-            max-width: 400px;
-            width: 100%;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        @media (max-width: 800px) {
-            .login-container {
-                padding: 24px 4vw 18px 4vw;
-                max-width: 99vw;
-            }
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-            .login-title {
-                font-size: 1.3rem;
-            }
-        }
-        .login-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #9e2d4a;
-            margin-bottom: 18px;
-            text-align: center;
-        }
-        .form-group {
-            width: 100%;
-            margin-bottom: 18px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #450b1e;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #c5b89f;
-            font-size: 1rem;
-            background: #fff;
-            color: #450b1e;
-            transition: border 0.2s;
-        }
-        .form-group input:focus {
-            border-color: #9e2d4a;
-            outline: none;
-        }
-        .password-group {
-            position: relative;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 12px;
-            top: 38px;
-            cursor: pointer;
-            color: #9e2d4a;
-            font-size: 1.1rem;
-        }
-        .login-actions {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .btn-primary {
-            background: #9e2d4a;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 0;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-primary:hover {
-            background: #450b1e;
-        }
-        .login-footer {
-            margin-top: 18px;
-            text-align: center;
-            font-size: 0.98rem;
-        }
-        .login-footer a {
-            color: #9e2d4a;
-            text-decoration: underline;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .login-footer a:hover {
-            color: #450b1e;
-        }
-        .error-message {
-            background: #f8d7da;
-            color: #842029;
-            border: 1px solid #f5c2c7;
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            width: 100%;
-            text-align: center;
-            display: none;
-        }
-        .error-message.show {
-            display: block;
-        }
-        .server-error-message {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            width: 100%;
-            text-align: center;
-            display: none;
-            font-size: 1rem;
-        }
-        .server-error-message.show {
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <div class="animated-circles">
@@ -240,17 +25,23 @@
         <div class="logo-container">
             <img src="../images/image.png" alt="Logo" class="logo" onerror="this.style.display='none'">
         </div>
-        <h1 class="login-title">Boa Parte - Login</h1>
+        <h1 class="login-title">Bem-vindo ao <span style="color:#c94f7c">Boa Parte</span></h1>
         <form id="loginForm" autocomplete="off">
             <div id="serverError" class="server-error-message"></div>
             <div class="form-group">
                 <label for="username">Usuário ou E-mail</label>
-                <input type="text" id="username" name="username" required placeholder="Digite seu usuário ou e-mail">
+                <div class="input-icon-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" name="username" required placeholder="Digite seu usuário ou e-mail" autocomplete="username">
+                </div>
             </div>
             <div class="form-group password-group">
                 <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required placeholder="Digite sua senha">
-                <i class="fas fa-eye password-toggle" id="togglePassword" tabindex="0" aria-label="Mostrar/ocultar senha"></i>
+                <div class="input-icon-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" required placeholder="Digite sua senha" autocomplete="current-password">
+                    <i class="fas fa-eye password-toggle" id="togglePassword" tabindex="0" aria-label="Mostrar/ocultar senha"></i>
+                </div>
             </div>
             <div id="errorToast" class="error-message"></div>
             <div class="login-actions">
@@ -264,9 +55,37 @@
     <script src="../js/login.js"></script>
     <script src="/js/maintenance.js"></script>
     <script>
-    // Exemplo de exibição de erro de servidor (substitua por lógica real do JS)
-    // document.getElementById('serverError').textContent = 'Erro no servidor. Tente novamente mais tarde.';
-    // document.getElementById('serverError').classList.add('show');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Alternar visibilidade da senha
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                togglePassword.classList.toggle('fa-eye-slash', type === 'text');
+            });
+        }
+        // Esqueceu a senha (exemplo de ação)
+        const forgotLink = document.getElementById('forgotPasswordLink');
+        if (forgotLink) {
+            forgotLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Entre em contato com o administrador para redefinir sua senha.');
+            });
+        }
+        // Animação extra: logo bounce ao focar no input
+        const logo = document.querySelector('.logo');
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (logo) logo.style.animation = 'logoPulse 0.7s cubic-bezier(.68,-0.55,.27,1.55)';
+            });
+            input.addEventListener('blur', () => {
+                if (logo) logo.style.animation = '';
+            });
+        });
+    });
     </script>
 </body>
 </html>
