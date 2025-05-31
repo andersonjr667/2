@@ -131,6 +131,76 @@
     cursor: not-allowed;
 }
 
+.spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #25d366;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.qr-fade-in {
+    animation: qrFadeIn 0.7s ease;
+}
+@keyframes qrFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.error-message {
+    color: #dc3545;
+    background: #fff0f0;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 16px 0 0 0;
+    font-size: 1rem;
+    display: block;
+}
+
+.status-indicator.error {
+    background: #fff0f0;
+    border-color: #dc3545;
+}
+
+.status-indicator.error .status-dot {
+    background: #dc3545 !important;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .whatsapp-card {
+        padding: 12px;
+        max-width: 98vw;
+    }
+    .qr-container {
+        padding: 10px;
+        min-height: 180px;
+    }
+    .instructions {
+        padding: 10px;
+        font-size: 0.98rem;
+    }
+    .actions button {
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+}
+
 /* SIDEBAR E MENU HAMBÚRGUER - PADRÃO users.html */
 .sidebar {
   position: fixed;

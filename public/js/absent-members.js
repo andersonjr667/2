@@ -302,6 +302,23 @@ function renderAbsentHistoryTable(members) {
     }).join('');
 }
 
+// Envia notificação de ausência via WhatsApp
+async function sendAbsentNotification(memberId, memberName) {
+    try {
+        // Importa mensagem do messages.js
+        const { messages } = await import('./messages.js');
+        const msg = messages.absent(memberName);
+        await fetch(`/api/members/${memberId}/notify-absent`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ message: msg })
+        });
+        showError('Notificação de ausência enviada!');
+    } catch (err) {
+        showError('Erro ao enviar notificação de ausência');
+    }
+}
+
 // Substitui o carregamento padrão ao iniciar
 window.addEventListener('DOMContentLoaded', () => {
     if (!window.checkAuth || !window.checkAuth()) return;

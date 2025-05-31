@@ -6,25 +6,6 @@ const { create } = require('venom-bot');
 
 let whatsappClient = null;
 
-// Initialize WhatsApp client
-create({
-    session: 'church-system',
-    multidevice: true,
-    headless: true
-})
-.then((client) => {
-    whatsappClient = client;
-    console.log('WhatsApp client initialized for notifications');
-    
-    // Set up message status listeners
-    client.onMessage((message) => {
-        handleMessageStatus(message);
-    });
-})
-.catch((error) => {
-    console.error('Error initializing WhatsApp:', error);
-});
-
 async function handleMessageStatus(message) {
     try {
         const status = message.ack; // 0: sent, 1: delivered, 2: read

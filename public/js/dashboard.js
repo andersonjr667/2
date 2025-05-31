@@ -350,9 +350,11 @@ function showActions(contactId, event) {
             try {
                 switch (action) {
                     case 'message': await sendMessage(contactId); break;
+                    case 'reminder': await sendReminderMessage(contactId); break;
                     case 'edit': await editContact(contactId); break;
                     case 'delete': await deleteContact(contactId); break;
                     case 'convert': await convertToMember(contactId); break;
+                    case 'welcome': await sendWelcomeMessage(contactId); break;
                     default: console.error('Unknown action:', action);
                 }
             } catch (error) {
@@ -407,6 +409,9 @@ actionButtons.forEach(button => {
                 case 'convert':
                     await convertToMember(contactId);
                     break;
+                case 'welcome':
+                    await sendWelcomeMessage(contactId);
+                    break;
                 default:
                     console.error('Unknown action:', action);
             }
@@ -431,6 +436,48 @@ async function sendMessage(contactId) {
     }
     
     showError('Mensagem enviada com sucesso');
+}
+
+// Envia mensagem de boas-vindas via WhatsApp
+async function sendWelcomeMessage(contactId) {
+    try {
+        const response = await fetch(`/api/contacts`);
+        const contacts = await response.json();
+        const contact = contacts.find(c => c._id === contactId);
+        if (!contact) return showError('Contato não encontrado');
+        // Importa mensagem do messages.js
+        const { messages } = await import('./messages.js');
+        const msg = messages.welcome(contact.name);
+        await fetch(`/api/contacts/${contactId}/message`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ message: msg })
+        });
+        showError('Mensagem de boas-vindas enviada!');
+    } catch (err) {
+        showError('Erro ao enviar mensagem de boas-vindas');
+    }
+}
+
+// Envia lembrete de culto
+async function sendReminderMessage(contactId) {
+    try {
+        const response = await fetch(`/api/contacts`);
+        const contacts = await response.json();
+        const contact = contacts.find(c => c._id === contactId);
+        if (!contact) return showError('Contato não encontrado');
+        // Importa mensagem do messages.js
+        const { messages } = await import('./messages.js');
+        const msg = messages.serviceReminderMessage(contact.name);
+        await fetch(`/api/contacts/${contactId}/message`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ message: msg })
+        });
+        showError('Lembrete de culto enviado!');
+    } catch (err) {
+        showError('Erro ao enviar lembrete de culto');
+    }
 }
 
 // Editar contato (abre prompt simples)

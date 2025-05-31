@@ -7,6 +7,7 @@ const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
 const fs = require('fs-extra');
+const venom = require('venom-bot'); // Importação necessária para WhatsApp
 
 // Update the WhatsApp import
 const whatsapp = require('./whatsapp');
@@ -176,14 +177,18 @@ io.on('connection', (socket) => {
             whatsappClient = await venom.create({
                 session: 'BoaParte-System', // Alterado para o novo nome
                 multidevice: true,
-                headless: true,
+                headless: 'new',
                 useChrome: false,
                 debug: false,
                 logQR: false
             },
             (base64Qr) => {
+                console.log('venom.create: callback QR executado');
                 if (base64Qr) {
+                    console.log('venom.create: base64Qr gerado, emitindo para o socket');
                     socket.emit('qr', base64Qr);
+                } else {
+                    console.log('venom.create: base64Qr vazio');
                 }
             },
             (statusFind) => {
@@ -211,9 +216,17 @@ io.on('connection', (socket) => {
 
     // Eventos do socket
     socket.on('requestQR', async () => {
+        console.log('Socket.IO: requestQR recebido');
         if (!whatsappClient) {
+            console.log('Socket.IO: whatsappClient nulo, iniciando WhatsApp...');
             await initWhatsApp();
         }
+    });
+
+    socket.on('checkStatus', async () => {
+        console.log('Socket.IO: checkStatus recebido (forçando nova sessão Venom)');
+        whatsappClient = null;
+        await initWhatsApp();
     });
 
     socket.on('logout', async () => {
@@ -590,4 +603,36 @@ printStatus({
     warnings: [
         'O uso de "headless: true" está depreciado. Use "headless: \'new\'" ou "headless: false".'
     ]
+});
+
+// Rota para enviar mensagem de boas-vindas para visitante
+app.post('/api/contacts/:id/message', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { message } = req.body;
+        let contacts = JSON.parse(await fs.readFile(contactsPath, 'utf8'));
+        const contact = contacts.find(c => c._id === id);
+        if (!contact) return res.status(404).json({ message: 'Contato não encontrado' });
+        // Aqui você pode integrar com o Venom para enviar a mensagem
+        // Exemplo: await whatsappClient.sendText(`${contact.phone}@c.us`, message);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao enviar mensagem' });
+    }
+});
+
+// Rota para notificar ausente
+app.post('/api/members/:id/notify-absent', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { message } = req.body;
+        let members = JSON.parse(await fs.readFile(membersPath, 'utf8'));
+        const member = members.find(m => m._id === id);
+        if (!member) return res.status(404).json({ message: 'Membro não encontrado' });
+        // Aqui você pode integrar com o Venom para enviar a mensagem
+        // Exemplo: await whatsappClient.sendText(`${member.phone}@c.us`, message);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao notificar ausente' });
+    }
 });

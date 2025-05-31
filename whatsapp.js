@@ -138,15 +138,40 @@ function setupWhatsApp(ioInstance) {
         return;
     }
 
+    ioInstance.on('connection', (socket) => {
+        // Permite múltiplos painéis de admin receberem QR/status
+        socket.on('requestQR', async () => {
+            if (client && client.isConnected && client.isConnected()) {
+                socket.emit('ready');
+            } else {
+                // Força reemissão do QR
+                client = null;
+                await initializeWhatsApp(socket);
+            }
+        });
+        socket.on('checkStatus', () => {
+            if (client && client.isConnected && client.isConnected()) {
+                socket.emit('ready');
+            } else {
+                socket.emit('disconnected');
+            }
+        });
+        socket.on('logout', async () => {
+            if (client) {
+                await client.logout();
+                client = null;
+                socket.emit('disconnected');
+            }
+        });
+    });
+
     initializeWhatsApp(ioInstance).then(whatsappClient => {
         client = whatsappClient;
-
         if (client) {
             client.onMessage((message) => {
                 console.log('📩 Nova mensagem:', message.body);
                 if (ioInstance) ioInstance.emit('whatsapp:message', message);
             });
-
             client.onStateChange((state) => {
                 console.log('🔄 Estado:', state);
                 if (ioInstance) ioInstance.emit('whatsapp:state', state);
